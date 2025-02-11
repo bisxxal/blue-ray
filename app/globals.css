@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+} 
+body {
+  background-color: black;
+color: white  ;
+}
+.base{
+  background-color: #3352cc;
+}
+.textbase{
+  color: #3352cc;
+}
+.buttonbg{
+  @apply bg-gradient-to-br text-white rounded-full   from-[#3352CC] font-medium to-[#1C2D70];
+}
+.buttongreen{
+  @apply bg-gradient-to-br text-white rounded-full   from-[#2db02a] font-medium to-[#004c12];
+}
+.buttonred{
+  @apply bg-gradient-to-br text-white rounded-full   from-[#de2626] font-medium to-[#840404];
+}
+.inputbg{
+  @apply bg-gradient-to-br  from-[#de262600] to-[#51515175] !border !border-[#5f5f5fa9];
+}
+.sidebg{
+  @apply bg-gradient-to-br  from-[#de262600] to-[#1c2d70ab] !border font-bold !border-[#3352ccce] text-[#3352cc]
+}
+select{
+  @apply border-[#5f5f5fa9] border bg-transparent rounded-xl py-2;
+}
