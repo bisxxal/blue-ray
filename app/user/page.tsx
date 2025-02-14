@@ -8,6 +8,9 @@ const userPublicPage = () => {
       <h1>User Public Page</h1>
       <Link  className='buttongreen px-6 py-3 ' href="/user/complaint">Complaint
       </Link>
+      
+      <Link  className='buttonbg px-6 py-3 ' href="/user/form">Form
+      </Link>
     </div>
     
   )

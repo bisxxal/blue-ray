@@ -12,15 +12,18 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await currentUser();
-  if (!user) {
+  if (!user && user?.role !== "emp") {
     redirect("/");
   } 
   return (
     <div className=" w-full min-h-screen ">
       <Navbar session={user} />
-      <div className=" flex min-h-screen w-full  ">
+      <div className=" mt-[70px] flex min-h-screen w-full  ">
         <AdminSidebar role="emp"/>
+
+        <div className="w-full ml-[200px]">
         {children}
+        </div>
       </div>
     </div>
   );

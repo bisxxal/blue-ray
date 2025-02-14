@@ -28,9 +28,16 @@ color: white  ;
 .inputbg{
   @apply bg-gradient-to-br  from-[#de262600] to-[#51515175] !border !border-[#5f5f5fa9];
 }
+.sidebarbg{
+  @apply bg-gradient-to-tl  from-[#de262600] to-[#51515175] !border !border-[#5f5f5fa9];
+}
 .sidebg{
   @apply bg-gradient-to-br  from-[#de262600] to-[#1c2d70ab] !border font-bold !border-[#3352ccce] text-[#3352cc]
 }
 select{
   @apply border-[#5f5f5fa9] border bg-transparent rounded-xl py-2;
 }
+
+label{
+  @apply font-bold text-lg;
+}     

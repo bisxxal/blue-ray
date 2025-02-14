@@ -17,10 +17,13 @@ const Navbar = ({ session }: { session?: PropsAuth }) => {
     }
   }, [session]);
   return (
-    <nav className=" w-full h-[60px] bg-zinc-900 text-white flex justify-between items-center px-4">
-      <Link href="/">
+    <nav className="z-[100] w-full h-[60px] fixed top-0 left-0 bg-[#ffffff16] backdrop-blur-[5px] text-white flex justify-between items-center px-4">
+     { !session && <Link href="/">
         <h1 className=" textbase font-bold text-3xl ">Blue Ray </h1>
-      </Link>
+      </Link>}
+     { session && <Link href={"/"+role}>
+        <h1 className=" textbase font-bold text-3xl ">Blue Ray </h1>
+      </Link>}
 
       <div className="flex items-center gap-9">
         {!session && session == null ? (
@@ -36,14 +39,14 @@ const Navbar = ({ session }: { session?: PropsAuth }) => {
               alt="profile"
               width={30}
               height={30}
-              className=" rounded-full"
+              className=" rounded-full hover:scale-110 transition-all  "
             />
             {session && (
               <button
-                className=" flex items-center justify-between gap-2 buttonred p-6 py-2"
+                className=" flex hover:scale-110 transition-all   items-center justify-between gap-2 buttonred p-6 py-2"
                 onClick={() => signOut()}
               >
-                {" "}
+                
                 Sign Out <FaSignOutAlt />
               </button>
             )}

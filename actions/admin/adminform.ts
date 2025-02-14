@@ -1,38 +1,81 @@
 'use server'
 
+import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { handelError } from "@/lib/utils/error"
 import { TJobSheet, TcreateEmp } from "@/lib/zod"
+import { getServerSession } from "next-auth"
 
 export const jobSheetAction = async (data:TJobSheet) => {
-    try { 
+    try {
+        // console.log('first',data)
+        const session = await getServerSession(authOptions)
+        const { email , address , circle , product , division , serial , modelno , earthing , stabilizer , IPVoltage , OPVoltage , grillTemperature , roomTemperature , ambientTemperature , technicianName , visitDate , faultFound , actionTaken , extraMaterial , copperPipe , drainPipe , wire , ODUStand , PinPlug , airFilter , technicianComments , newSparepartConsumed , PartReplacementDetails  } = data      
         const job = await prisma.jobsheet.create({
             data:{
-                email:data.email,   
-                address:data.address,
-                circle:data.circle,
-                product:data.product,
-                division:data.division,
-                serial :data.serial,
-                modelno :data.modelno
+                email,
+                address,
+                circle,
+                product,
+                division,
+                serial,
+                modelno ,
+                earthing,
+                stabilizer,
+                IPVoltage,
+                OPVoltage,
+                grillTemperature,
+                roomTemperature,
+                ambientTemperature,
+                technicianName,
+                visitDate,
+                faultFound,
+                actionTaken,
+                extraMaterial,
+                copperPipe:data?.copperPipe! as number,
+                drainPipe:data?.drainPipe! as number,
+                wire:data?.wire! as number,
+                ODUStand:data?.ODUStand! as number,
+                PinPlug:data.PinPlug! as number,
+                airFilter:data?.airFilter! as number,
+                technicianComments,
+                newSparepartConsumed,
+                PartReplacementDetail:data.PartReplacementDetails ? data.PartReplacementDetails : [],
+                
+                madeBy: session?.user?.email!,
+
             }
         })
         //  console.log("pushed",job)
+         return JSON.parse(JSON.stringify({status:200}))
     } catch (error) {
+        // console.log(error)
         handelError(error , 'jobSheetAction')
+        return JSON.parse(JSON.stringify({status:404}))
     }
 }
 
 export const AllJobSheetAction = async () => {
     try { 
         const job = await prisma.jobsheet.findMany({
+            orderBy:{
+                createdAt:'desc'    
+            },
             select: {
                 email: true,
                 address: true,
                 circle: true,
                 product: true,
                 division: true,
-                id: true    
+                id: true,
+                madeBy: true,
+                serial:true,  
+                modelno:true,
+                callClosed:true,
+                verifiedBy:true,
+                totalAmount:true,
+                visitDate:true,
+                createdAt:true,
             }
         });
          
@@ -41,6 +84,7 @@ export const AllJobSheetAction = async () => {
     } catch (error) {
         console.log(error);  
         handelError(error, 'JobSheet');  
+        return JSON.parse(JSON.stringify({status:404}))
     }
 }
 export const SingleJobSheetAction = async (id:string) => {
@@ -65,6 +109,7 @@ export const SingleJobSheetAction = async (id:string) => {
     } catch (error) {
         console.log(error);  
         handelError(error, 'JobSheet');  
+        return JSON.parse(JSON.stringify({status:404}))
     }
 }
 // access 
@@ -102,13 +147,15 @@ export const AllEmployee = async () => {
                 role:true,
                 id:true,
                 image:true,
-                city:true
+                city:true,
+
             }
         })
         return JSON.parse(JSON.stringify(emp))
 
     } catch (error) {
         handelError(error , 'AllEmployee')
+        return JSON.parse(JSON.stringify({status:404}))
     }
 
 }
@@ -125,7 +172,27 @@ export const AddEmp = async (data:TcreateEmp) => {
             }
 
         })
+        return JSON.parse(JSON.stringify({status:200}))
     } catch (error) {
         handelError(error , 'createEmp')    
+        return JSON.parse(JSON.stringify({status:404}))
+    }
+}
+
+export const VerifyJobSheet = async (id:string ,callClosed:string , verified:string) => {
+    try {
+          await prisma.jobsheet.update({
+            where:{
+                id
+            },
+            data:{
+                verifiedBy:verified,
+                callClosed
+            }
+        })
+        return JSON.parse(JSON.stringify({status:200}))
+    } catch (error) {
+        handelError(error , 'VerifyJobSheet')
+        return JSON.parse(JSON.stringify({status:404}))
     }
 }

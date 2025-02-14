@@ -18,7 +18,8 @@ export const currentUser = async () => {
                 name:true,
                 role:true,
                 id:true,
-                image:true
+                image:true,
+                city:true,
             }
         })
         return JSON.parse(JSON.stringify(user));

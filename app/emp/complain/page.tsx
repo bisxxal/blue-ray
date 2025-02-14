@@ -1,8 +1,12 @@
+
+import { currentUser } from '@/actions/admin/role'
+import UserComplain from '@/components/UserComplain'
 import React from 'react'
 
-const page = () => {
+const page = async() => {
+  const user = await currentUser()
   return (
-    <div>page</div>
+   <UserComplain role='emp' user={user} />
   )
 }
 
