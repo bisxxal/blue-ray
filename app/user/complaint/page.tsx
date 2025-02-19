@@ -1,4 +1,5 @@
 'use client'; 
+import { emailResend } from '@/actions/email/email';
 import { CreateComplain } from '@/actions/user/complain';
 import { TuserComplainForm, userComplainForm } from '@/lib/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,21 +7,22 @@ import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast';
 
 const UserComplaint = () => {
-    const { register, handleSubmit , 
-          formState:{errors , isSubmitting},
-          reset, 
-          } = useForm<TuserComplainForm>({resolver:zodResolver(userComplainForm)})
+    const { register, handleSubmit , formState:{errors , isSubmitting},reset, } = useForm<TuserComplainForm>({resolver:zodResolver(userComplainForm)})
   
     const onSubmit =async (data:TuserComplainForm) => {
         const res = await CreateComplain(data)
-          if(res.status === 200){
-            toast.success('complain registered');
+        
+        if(res.status === 200){
+          toast.success('complain registered');
+          // await emailResend({ email: data?.email, subject: 'complain Sumbited'}); // email sending
+          reset();
           }
           if(res.status === 201){
-            toast.error('complain not found please enter valid complainId');
+            toast.error('complain not found please enter valid complain Id');
           }
-          else{
-            toast.error('complain not registered');}
+          if(res.status === 404){
+            toast.error('Error while complain');
+          }
       }
   return (
     <div className=' w-full h-screen flex gap-6 pt-10 items-center flex-col '> 

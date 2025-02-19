@@ -40,4 +40,8 @@ select{
 
 label{
   @apply font-bold text-lg;
-}     
+}
+
+.buttonhover{
+  @apply hover:scale-105 hover:transition-all duration-300;
+}

@@ -1,12 +1,16 @@
 'use client';
-import { jobSheetAction } from '@/actions/admin/adminform';
+import { FeatchJOBSheetData, jobSheetAction } from '@/actions/admin/jobsheet';
+import { JOBSheetData } from '@/constants';
 import { jobSheet, TJobSheet } from '@/lib/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import DatePicker from 'react-datepicker';
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast';
+import { FiLoader } from 'react-icons/fi';
       
-const Jobsheet = () => {
+const Jobsheet = ({id}:{id?:string}) => {
     const { register, handleSubmit , formState:{errors , isSubmitting},reset, } = useForm<TJobSheet>({resolver:zodResolver(jobSheet)})
 
      const onSubmit = async(data:TJobSheet) => {
@@ -19,28 +23,40 @@ const Jobsheet = () => {
      else{
           toast.error('Something went wrong');
      }
+
+     console.log(data)
     }
     const [showMaterial, setShowMaterial] = useState('false')
     const [showSpare, setshowSpare] = useState('false')
 
+    const { isLoading, data } = useQuery({
+     queryKey: ["josheetData" ,id],
+     queryFn: async () => id ? await FeatchJOBSheetData(id) : Promise.reject('ID is undefined'),
+     staleTime: 2000,
+     enabled: !!id,
+   });
+
+   const job:JOBSheetData = data?.job
+   console.log(job)
   return (
     <div className=' w-full h-screen flex gap-6 pt-10 items-center flex-col '>
       <h1 className=' font-bold text-center text-4xl '>BlueRay_Jobsheet</h1>
 
-      {/* { user && <h1 className=' w-full mx-auto text-center'>Made By - <input className=' bg-transparent border-none w-[200px] outline-none p-2 rounded-xl ' type="text" {...register("madeBy")} defaultValue={user} readOnly /> </h1>} */}
-          <h2 className=' text-center text-2xl'>Please fill the form</h2>
+      {!id ? <h2 className=' text-center text-2xl'>Please Fill the form </h2> : 
+          <h2 className=' text-center text-2xl'>Update form</h2>
+      }
  
         <form className=' flex flex-col w-5/6  !mx-auto gap-3' onSubmit={handleSubmit(onSubmit)}> 
 
          <label>Customer Address*</label>
-         <textarea className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2'  {...register("address")}  placeholder='address '/>
+         <textarea defaultValue={job?.address} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2'  {...register("address")}  placeholder='address '/>
         {errors?.address && <span className='text-red-600 text-sm'>{errors?.address?.message}</span>}
 
 
 <div className='w-full justify-between flex gap-10 mt-4'>
 <div className=' w-1/2'>
 <h3>Circle*</h3>
-       <select className=' w-full block capitalize inputbg mt-3' {...register("circle")} >
+       <select defaultValue={job?.circle} className=' w-full block capitalize inputbg mt-3' {...register("circle")} >
             <option value="balasore">balasore</option>
             <option value="keonjhar">keonjhar</option>
             <option value="jajpur">jajpur</option>
@@ -52,7 +68,7 @@ const Jobsheet = () => {
 
        <div className=' w-1/2 '>
        <label>Division*</label>
-       <select  className='w-full capitalize inputbg mt-3 !block' {...register("division")} >
+       <select defaultValue={job?.division}  className='w-full capitalize inputbg mt-3 !block' {...register("division")} >
             <option value="JED">JED</option>
             <option value="CED">CED</option>
             <option value="BED">BED</option>
@@ -72,7 +88,7 @@ const Jobsheet = () => {
      <div className='mt-4 w-full justify-between flex gap-10'>
           <div className=' w-1/2'>
           <label>Product*</label>
-       <select  className=' inputbg w-full capitalize mt-3' {...register("product")} >
+       <select defaultValue={job?.product}  className=' inputbg w-full capitalize mt-3' {...register("product")} >
             <option value="Godrej">Godrej</option>
             <option value="Voltas">Voltas</option>
             <option value="Carrier">Carrier</option>
@@ -86,7 +102,7 @@ const Jobsheet = () => {
           </div>
           <div className=' w-1/2'>
           <label>Email*</label>
-       <select  className=' w-full inputbg capitalize mt-3' {...register("email")} >
+       <select defaultValue={job?.email} className=' w-full inputbg capitalize mt-3' {...register("email")} >
             <option value="Koram.Bora@tpnodl.com">Koram.Bora@tpnodl.com</option>
             <option value="Aurobindalala@voltas.com">Aurobindalala@voltas.com</option> 
             </select>  {errors.email && <span className='text-red-600 text-sm'>{errors?.email?.message}</span>}
@@ -95,19 +111,19 @@ const Jobsheet = () => {
      </div>
  
         <label>Serial*</label>
-        <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("serial")}  placeholder='serial '/>
+        <input defaultValue={job?.serial} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("serial")}  placeholder='serial '/>
         {errors?.serial && <span className='text-red-600 text-sm'>{errors?.serial?.message}</span>}
 
         <label>Modelno*</label>
-        <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("modelno")}  placeholder='modelno '/> 
+        <input  defaultValue={job?.modelno} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("modelno")}  placeholder='modelno '/> 
         {errors?.modelno && <span className='text-red-600 text-sm'>{errors?.modelno?.message}</span>}
        
      <div>
       <p>Earthing*</p>
       <div className='mt-3 gap-5 flex '>
-      <input type="radio" id="ok"  {...register("earthing")}  value="OK"/>
+      <input  defaultValue={job?.earthing} type="radio" id="ok"  {...register("earthing")}  value="OK"/>
       <label htmlFor="ok">OK</label>
-      <input type="radio" id="ng"  {...register("earthing")}  value="NG"/>
+      <input defaultValue={job?.earthing} type="radio" id="ng"  {...register("earthing")}  value="NG"/>
       <label htmlFor="ng">NG</label>
       </div>
      </div>
@@ -127,29 +143,29 @@ const Jobsheet = () => {
 
 
        <label>IP Voltage *</label>
-        <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("IPVoltage")}  placeholder='45'/>
+        <input defaultValue={job?.IPVoltage}className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("IPVoltage")}  placeholder='45'/>
         {errors?.IPVoltage && <span className='text-red-600 text-sm'>{errors?.IPVoltage?.message}</span>}
 
         <label>Grill Temperature *</label>
-        <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("grillTemperature")}  placeholder='34'/>
+        <input defaultValue={job?.grillTemperature} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("grillTemperature")}  placeholder='34'/>
         {errors?.grillTemperature && <span className='text-red-600 text-sm'>{errors?.grillTemperature?.message}</span>}
       
         <label>OPVoltage *</label>
-        <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("OPVoltage")}  placeholder='76'/>
+        <input defaultValue={job?.OPVoltage} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("OPVoltage")}  placeholder='76'/>
         {errors?.OPVoltage && <span className='text-red-600 text-sm'>{errors?.OPVoltage?.message}</span>}
 
 
         <label>Room Temperature *</label>
-        <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("roomTemperature")}  placeholder='20'/>
+        <input defaultValue={job?.roomTemperature} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("roomTemperature")}  placeholder='20'/>
         {errors?.roomTemperature && <span className='text-red-600 text-sm'>{errors?.roomTemperature?.message}</span>}
 
 
         <label>Ambient Temperature *</label>
-        <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("ambientTemperature")}  placeholder='65'/>
+        <input defaultValue={job?.ambientTemperature} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("ambientTemperature")}  placeholder='65'/>
         {errors?.ambientTemperature && <span className='text-red-600 text-sm'>{errors?.ambientTemperature?.message}</span>}
 
           <label>Technician Name*</label>
-          <select  className=' inputbg w-full capitalize mt-3' {...register("technicianName")} >
+          <select defaultValue={job?.technicianName}  className=' inputbg w-full capitalize mt-3' {...register("technicianName")} >
           <option value="Minnaz Quadri">Minnaz Quadri</option>
           <option value="Biswajit">Biswajit</option>
           <option value="Nizam Quadri">Nizam Quadri</option>
@@ -159,12 +175,11 @@ const Jobsheet = () => {
        </select>  {errors.technicianName && <span className='text-red-600 text-sm'>{errors?.technicianName?.message}</span>}
         
           <label>Date of Visit*</label>
-          <input className='p-2 rounded-xl inputbg bg-transparent' type="datetime-local" {...register("visitDate")}/>
+          <input  className='p-2 rounded-xl inputbg bg-transparent' type="datetime-local" {...register("visitDate")}/>
           {errors?.visitDate && <span className='text-red-600 text-sm'>{errors?.visitDate?.message}</span>}
-
-
+ 
           <label>Fault Found *</label>
-          <textarea className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2'  {...register("faultFound")}  placeholder='faultFound '/>
+          <textarea defaultValue={job?.faultFound} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2'  {...register("faultFound")}  placeholder='faultFound '/>
 
         <div className=''>
         <label>Action Taken*</label>
@@ -217,7 +232,7 @@ const Jobsheet = () => {
 {/*  yes no starts herere */}
        <div className=''>
           <p>Extra material consumed*</p>
-          <select className=' w-full inputbg capitalize mt-3' {...register("extraMaterial", { onChange: (e) => setShowMaterial(e.target.value) })} >
+          <select defaultValue={job?.extraMaterial} className=' w-full inputbg capitalize mt-3' {...register("extraMaterial", { onChange: (e) => setShowMaterial(e.target.value) })} >
             <option value="false">No</option> 
             <option value="true">Yes</option>
             </select>  {errors.extraMaterial && <span className='text-red-600 text-sm'>{errors?.extraMaterial?.message}</span>}
@@ -229,28 +244,27 @@ const Jobsheet = () => {
 
      <div className=' w-1/2'>
           <label>Copper pipe*</label>
-          <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("copperPipe")}  placeholder='2'/>
+          <input defaultValue={job?.copperPipe} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("copperPipe")}  placeholder='2'/>
           {errors?.copperPipe && <span className='text-red-600 text-sm'>{errors?.copperPipe?.message}</span>}
           </div>
 
           <div className=' w-1/2'>
           <label>Drain pipe</label>
-          <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("drainPipe")}  placeholder='65'/>
+          <input defaultValue={job?.drainPipe}  className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("drainPipe")}  placeholder='65'/>
           {errors?.drainPipe && <span className='text-red-600 text-sm'>{errors?.drainPipe?.message}</span>}
           </div>
-
      </div>
 
 
      <div className='w-full justify-between flex gap-10 mt-4'>
      <div className=' w-1/2'>
           <label>Wire</label>
-          <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("wire")}  placeholder='2'/>
+          <input defaultValue={job?.wire}  className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("wire")}  placeholder='2'/>
           {errors?.wire && <span className='text-red-600 text-sm'>{errors?.wire?.message}</span>}
           </div>
           <div className=' w-1/2'>
           <label>ODU Stand</label>
-          <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("ODUStand")}  placeholder='5'/>
+          <input defaultValue={job?.ODUStand} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("ODUStand")}  placeholder='5'/>
           {errors?.ODUStand && <span className='text-red-600 text-sm'>{errors?.ODUStand?.message}</span>}
           </div>
      </div>
@@ -259,21 +273,21 @@ const Jobsheet = () => {
      <div className='w-full justify-between flex gap-10 mt-4'>
           <div className=' w-1/2'>
           <label>3 Pin Top</label>
-          <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("PinPlug")}  placeholder='2'/>
+          <input defaultValue={job?.PinPlug} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("PinPlug")}  placeholder='2'/>
           {errors?.PinPlug && <span className='text-red-600 text-sm'>{errors?.PinPlug?.message}</span>}
           </div>
           <div className=' w-1/2'>
           <label>Air filter</label>
-          <input className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("airFilter")}  placeholder='5'/>
+          <input defaultValue={job?.airFilter}  className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2' type="number"  {...register("airFilter")}  placeholder='5'/>
           {errors?.airFilter && <span className='text-red-600 text-sm'>{errors?.airFilter?.message}</span>}
           </div>
      </div>  </> }
 
      <label>Technician Comments*</label>
-     <textarea className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2'  {...register("technicianComments")}  placeholder='Technician Comments '/>
+     <textarea  defaultValue={job?.technicianComments} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2'  {...register("technicianComments")}  placeholder='Technician Comments '/>
          <div>
           <label>New Sparepart Consumed*</label>
-          <select  className=' w-full inputbg capitalize mt-3' {...register("newSparepartConsumed",{ onChange: (e) => setshowSpare(e.target.value) })} >
+          <select defaultValue={job?.newSparepartConsumed} className=' w-full inputbg capitalize mt-3' {...register("newSparepartConsumed",{ onChange: (e) => setshowSpare(e.target.value) })} >
             <option value="false">No</option> 
             <option value="true">Yes</option>
             </select>  {errors.newSparepartConsumed && <span className='text-red-600 text-sm'>{errors?.newSparepartConsumed?.message}</span>}
@@ -286,7 +300,7 @@ const Jobsheet = () => {
           <p>Add part replacement details to it. Select the parts consumed.</p>
 
          <div>
-         <input type="checkbox" id="50 MFD Capacitor"{...register("PartReplacementDetails")} value="50 MFD Capacitor"/>
+         <input  type="checkbox" id="50 MFD Capacitor"{...register("PartReplacementDetails")} value="50 MFD Capacitor"/>
          <label htmlFor="50 MFD Capacitor"> 50 MFD Capacitor</label>
          </div>
 
@@ -296,10 +310,10 @@ const Jobsheet = () => {
           </div>
 
              // add more fileds here
+        {errors.PartReplacementDetails && <span className='text-red-600 text-sm'>{errors?.PartReplacementDetails?.message}</span>}
 
         </div>}
-     {/* {errors && <span className='text-red-600 text-sm'>Something went wrong</span>} */}
-        <button className=' px-5 py-3  mt-10 buttonbg w-24' disabled={isSubmitting} type="submit">Sumbit</button>
+        <button className=' px-5 py-3  mt-10 buttonbg w-24' disabled={isSubmitting} type="submit">{isSubmitting ? <FiLoader className=' animate-spin' /> :"Sumbit"}</button>
         </form>
     </div>
   )

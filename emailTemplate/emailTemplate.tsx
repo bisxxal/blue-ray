@@ -1,17 +1,4 @@
-// import * as React from 'react';
-
-// interface EmailTemplateProps {
-//   firstName: string;
-// }
-
-// export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
-//   firstName,
-// }) => (
-//   <div>
-//     <h1>Welcome, {firstName}!</h1>
-//   </div>
-// );
-
+ 
 import {
     Html,
     Head,
@@ -25,11 +12,10 @@ import {
   } from '@react-email/components';
   
   interface VerificationEmailProps {
-    username: string;
-    otp: string;
+    email: string;
   }
   
-  export default function VerificationEmail({ username, otp }: VerificationEmailProps) {
+  export default function VerificationEmail({ email }: VerificationEmailProps) {
     return (
       <Html lang="en" dir="ltr">
         <Head>
@@ -45,23 +31,18 @@ import {
             fontStyle="normal"
           />
         </Head>
-        <Preview>Here&apos;s your verification code: {otp}</Preview>
         <Section>
           <Row>
-            <Heading as="h2">Hello {username},</Heading>
+            <Heading as="h2">Hello {email.split('@gmail.com')},</Heading>
           </Row>
           <Row>
             <Text>
-              Thank you for registering. Please use the following verification
-              code to complete your registration:
+             Complain Sumbited
             </Text>
-          </Row>
-          <Row>
-            <Text>{otp}</Text> 
-          </Row>
+          </Row> 
           <Row>
             <Text>
-              If you did not request this code, please ignore this email.
+             This is auto generated mail ! please do not reply
             </Text>
           </Row>
           {/* <Row>

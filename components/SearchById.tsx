@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-
+import { CiSearch } from "react-icons/ci";
+ 
 interface SearchInputProps {
   placeholder?: string;
   onSearch: (value: string) => void;
@@ -18,13 +19,16 @@ const SearchInput: React.FC<SearchInputProps> = ({ placeholder = 'Search...', on
   }, [searchTerm, debounceTime, onSearch]);
 
   return (
+    <div className='p-2 flex items-center gap-2 bg-transparent border rounded-full inputbg w-72'>
+    <CiSearch size={22}/>
     <input
       type="text"
       placeholder={placeholder}
       value={searchTerm}
       onChange={(e) => setSearchTerm(e.target.value)}
-      className="p-2 bg-transparent border rounded-md w-64"
-    />
+      className="py-1 outline-none w-full bg-transparent "
+      />
+      </div>
   );
 };
 

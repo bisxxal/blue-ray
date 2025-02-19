@@ -12,7 +12,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await currentUser();
-  if (!user && user?.role !== "emp") {
+  // if (!user || user?.role === "admin") {
+  //   redirect("/");
+  // } 
+  if (!user ) {
     redirect("/");
   } 
   return (

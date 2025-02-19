@@ -1,142 +1,6 @@
-// "use client";
-// import { AllJobSheetAction, VerifyJobSheet } from "@/actions/admin/adminform";
-// import { JOBsheetProps, PropsAuth } from "@/constants";
-// import { useMutation, useQuery } from "@tanstack/react-query";
-// import Link from "next/link";
-// import { useRouter } from 'next/navigation';
-// import React from "react";
-// import toast from "react-hot-toast";
-// import Loader from "./loader";
-// import moment from "moment";
  
-// const AllJobSheet = ({ role , emp }: { role: "admin" | "emp" ,emp?:PropsAuth }) => {
-//   const router = useRouter();
-//   const { isLoading, isError, data, error } = useQuery({
-//     queryKey: ["fetchjob"],
-//     queryFn: async () => {
-//       const data = await AllJobSheetAction();
-//       return data;
-//     },
-//     staleTime: 2000,
-//   });
-
-//   const verifyFunction = async(id: string , verified:string , callClosed:string) => {
-//     console.log(id , callClosed , verified);
-//     const res = await VerifyJobSheet(id , callClosed , verified);
-   
-//     if (res?.status === 200){
-//       if(verified === 'true'){
-//         toast.success("JobSheet Verified");
-//       }
-//       if(callClosed === 'true'){
-//         toast.success("JobSheet Closed");
-//       }
-
-//       router.refresh();
-//     };
-//     if(res?.status === 404){
-//       toast.error("Error");
-//     }
-  
-//   };
-
-//   console.log(emp?.email , emp?.city)
-//   if (isLoading)
-//     return (<Loader/>);
-
-//   return (
-//     <div className=" w-full min-h-screen px-10 bg-re d-500">
-//       <h1 className=" text-center text-2xl font-bold mb-10">All Job Sheets</h1>
-
-//       <div className="border-2 w-[2200px] inputbg border-[#80808056] p-3 rounded-lg overflow-x-scroll bg-gre en-300 ">
-//         <div className=" grid grid-cols-12 gap-5 mb-5 border-[#80808056] border-b-2 pb-3">
-//           <p>id</p>
-//           {role === "admin" && <p>Made By</p>}
-//           <p>circle</p>
-//           <p>Division</p>
-//           <p>product</p>
-//           <p>serial</p>
-//           <p>modelno</p>
-//           <p>created date</p>
-//           <p>Visted date</p>
-//           <p>Call Closed</p>
-//           <p>Amount</p>
-//           <p>Verified</p>
-//           <p>PDF</p>
-//         </div>
-
-//         {role === "emp" &&data &&data?.filter(
-//               (job: JOBsheetProps) =>
-//                 job.madeBy === emp?.email 
-//               &&   job.circle === emp.city
-//             )
-//             .map((item: JOBsheetProps) => (
-//               <div key={item.id} className="grid grid-cols-12 gap-5 pb-3">
-//                 <p>{item?.id}</p>
-//                 <p>{item?.circle}</p>
-//                 <p>{item?.division}</p>
-//                 <p>{item?.product}</p>
-//                 <p>{item?.serial}</p>
-//                 <p>{item?.modelno}</p>
-//                 <p>{moment(item?.createdAt).format("Do MMM YY")}</p>
-//                 <p>{moment(item?.visitDate).format("Do MMM YY")}</p>
-//                 <p>{item?.callClosed == 'true' ? <span className=" text-red-500">Closed</span> :<span className=" text-green-500"> Not Closed</span>}</p>
-//                 <p>{item?.totalAmount}</p>              
-//                 <p>{item?.verifiedBy === 'false' ? <span className=" text-red-500">Not verifyed</span> :<span className=" text-green-500">verifyed</span>}</p>
-
-//                 <Link href={`/emp/jobsheet/${item.id}`} className='buttongreen text-center w-28 py-2'>View</Link>
-//               </div>
-//             ))}
-
-
-
-//         {role === "admin" &&data &&data.map((item: JOBsheetProps) => (
-//               <div key={item.id} className="grid grid-cols-12 gap-5 pb-3">
-//                 <p>{item.id}</p>
-//                 {role === "admin" && <p>{item.madeBy}</p>}
-//                 <p>{item.circle}</p>
-//                 <p>{item.division}</p>
-//                 <p>{item.product}</p>
-//                 <p>{item.serial}</p>
-//                 <p>{item.modelno}</p>
-//                 <p>{moment(item?.createdAt).format("Do MMM YY")}</p>
-//                 <p>{moment(item?.visitDate).format("Do MMM YY")}</p>
-
-//                 {item.callClosed === "false" ? (
-//                   <button
-//                     onClick={() => verifyFunction(item.id , item.verifiedBy , 'true')}
-//                     className="buttonred text-center w-28 py-2"
-//                   >
-//                     Not Closed
-//                   </button>
-//                 ) : (
-//                   <p className=" cursor-not-allowed buttongreen text-center w-28 py-2 ">closed</p>
-//                 )}
-
-//                 <p>{item.totalAmount}</p>
-//                 {item.verifiedBy === "false" ? (
-//                   <button
-//                     onClick={() => verifyFunction(item.id , 'true' , item.callClosed)}
-//                     className="buttonred text-center w-28 py-2"
-//                   >
-//                     Not Verify
-//                   </button>
-//                 ) : (
-//                   <p className=" cursor-not-allowed buttongreen text-center w-28 py-2 ">verified</p>
-//                 )}
-//                 <Link href={`/admin/jobsheet/${item.id}`} className='buttonbg text-center w-28 py-2'>View</Link>
-//               </div>
-//             ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AllJobSheet;
-
-
 "use client";
-import { AllJobSheetAction, VerifyJobSheet } from "@/actions/admin/adminform";
+import { AllJobSheetAction, deleteJobSheet, VerifyJobSheet } from "@/actions/admin/jobsheet";
 import { JOBsheetProps, PropsAuth } from "@/constants";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
@@ -145,6 +9,7 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Loader from "./loader";
 import moment from "moment";
+import DatePicker from "react-datepicker";
 
 const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) => {
   const router = useRouter();
@@ -191,13 +56,22 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
     }
   };
 
+  const deleteJObsheet = async (id: string) => {
+    const res = await deleteJobSheet(id);
+    if (res?.status === 200) {
+      toast.success('JobSheet Deleted');
+      router.refresh();
+    } else {
+      toast.error("Error while Deleting JobSheet");
+    }
+  }
+
   if (isLoading) return <Loader />;
 
   return (
     <div className="w-full min-h-screen px-10">
       <h1 className="text-center text-2xl font-bold mb-10">All Job Sheets</h1>
 
-      {/* Sorting & Date Range Filters */}
       <div className="flex w-[70%] items-center justify-between mb-5">
         <button
           onClick={() => setSortOrder(sortOrder === "new" ? "old" : "new")}
@@ -206,25 +80,30 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
           Sort: {sortOrder === "new" ? "Newest First" : "Oldest First"}
         </button>
 
-        <div className="flex gap-4">
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="border inputbg bg-[#ffffff7e] p-2 rounded-lg"
-          />
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="border inputbg bg-[#ffffff7e]  p-2 rounded-lg"
-          />
+        <div className=" "> 
+          <p className=" text-center mb-3 font-medium text-lg">select data range</p>
+         <div className=" flex gap-4">
+         <DatePicker
+              selected={startDate ? new Date(startDate) : null}
+              onChange={(date) => setStartDate(date ? date.toISOString().split('T')[0] : "")}
+              className="border inputbg bg-transparent px-2 py-1 rounded-lg"
+              dateFormat="yyyy-MM-dd"
+              placeholderText="Start Date"
+            />
+           <DatePicker
+              selected={endDate ? new Date(endDate) : null}
+              onChange={(date) => setEndDate(date ? date.toISOString().split('T')[0] : "")}
+              className="border inputbg bg-transparent px-2 py-1 rounded-lg"
+              dateFormat="yyyy-MM-dd"
+              placeholderText="End Date"
+            />
+         </div>
         </div>
       </div>
 
       {/* Table */}
       <div className="border-2 w-[2200px] inputbg border-[#80808056] p-3 rounded-lg overflow-x-scroll">
-        <div className="grid grid-cols-12 gap-5 mb-5 border-b-2 pb-3">
+        <div className="grid grid-cols-12 gap-5 mb-5 border-b-2 border-[#80808056] pb-3">
           <p>ID</p>
           {role === "admin" && <p>Made By</p>}
           <p>Circle</p>
@@ -237,14 +116,16 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
           <p>Call Closed</p>
           <p>Amount</p>
           <p>Verified</p>
-          <p>PDF</p>
+          <p>Complain</p>
+          <p>Delete</p>
+        { role === 'admin' && <p>PDF</p>}
         </div>
 
         {role === "emp" &&
           filteredData
             .filter((job) => job.madeBy === emp?.email && job.circle === emp.city)
             .map((item) => (
-              <div key={item.id} className="grid grid-cols-12 gap-5 pb-3">
+              <div key={item.id} className="grid grid-cols-12 mb-5 gap-5 pb-3">
                 <p>{item.id}</p>
                 <p>{item.circle}</p>
                 <p>{item.division}</p>
@@ -260,16 +141,16 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
                 <p className={item.verifiedBy === "false" ? "text-red-500" : "text-green-500"}>
                   {item.verifiedBy === "false" ? "Not Verified" : "Verified"}
                 </p>
-                <Link href={`/emp/jobsheet/${item.id}`} className="buttongreen text-center w-28 py-2">
-                  View
-                </Link>
+                <p className="font-semibold !text-green-500 ">{item.complains.filter((c:any)=>c.status === 'New').map((c:any)=>c.status)} {item.complains.filter((c:any)=>c.status === 'New').length}</p>
+              
+              <button></button>
               </div>
             ))}
 
         {/* Admin Role Data */}
         {role === "admin" &&
           filteredData.map((item) => (
-            <div key={item.id} className="grid grid-cols-12 gap-5 pb-3">
+            <div key={item.id} className="grid grid-cols-12 mb-5 gap-5 pb-3">
               <p>{item.id}</p>
               <p>{item.madeBy}</p>
               <p>{item.circle}</p>
@@ -292,10 +173,10 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
                 <p className="cursor-not-allowed buttongreen text-center w-28 py-2">Closed</p>
               )}
 
-              <p>{item.totalAmount}</p>
+              <p>{item?.totalAmount}</p>
 
               {/* Verification Button */}
-              {item.verifiedBy === "false" ? (
+              {item?.verifiedBy === "false" ? (
                 <button
                   onClick={() => verifyFunction(item.id, "true", item.callClosed)}
                   className="buttonred text-center w-28 py-2"
@@ -306,13 +187,19 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
                 <p className="cursor-not-allowed buttongreen text-center w-28 py-2">Verified</p>
               )}
 
+              <p> <span className="  font-semibold !text-green-500 ">{item.complains.filter((c:any)=>c.status === 'New').map((c:any)=>c.status)}</span> {item.complains.filter((c:any)=>c.status === 'New').length}</p>
+
+              <button onClick={()=>deleteJObsheet(item.id)} className="buttonred w-fit px-8 hover:scale-105 hover:transition-all">Delete</button>
+
               <Link href={`/admin/jobsheet/${item.id}`} className="buttonbg text-center w-28 py-2">
                 View
               </Link>
+
+              <Link href={`/admin/jobsheet/update/${item.id}}`} className="buttongreen w-fit px-8 hover:scale-105 hover:transition-all">Update </Link>
             </div>
           ))}
 
-          {filteredData.length == 0 && <p className="text-center text-xl font-semibold">No Data Found</p>}
+          {filteredData?.length == 0 && <p className="text-center text-xl font-semibold">No Data Found</p>}
       </div>
     </div>
   );

@@ -28,6 +28,7 @@ export const CreateComplain = async (data:TuserComplainForm) => {
             return JSON.parse(JSON.stringify({status:200}))        
         }
     } catch (error) {
+        return JSON.parse(JSON.stringify({status:404}))    
         handelError(error,'Error in creating complain')
     }
 }

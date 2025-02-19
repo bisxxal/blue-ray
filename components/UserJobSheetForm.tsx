@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import React from 'react' 
 import Loader from './loader';
  
-const UserJobSheetForm = ({role}:{role:'admin'|'emp'}) => {
+const UserJobSheetForm = ({role , city}:{role:'admin'|'emp' , city?:string}) => {
 
     const { isLoading, isError, data, error } = useQuery({
         queryKey: ['fetchuserform'],
@@ -16,7 +16,7 @@ const UserJobSheetForm = ({role}:{role:'admin'|'emp'}) => {
         staleTime: 2000
     });
     if (isLoading) return <Loader /> ;
-  
+  console.log(city)
   return (
     <div className=" w-full min-h-screen px-10 bg-re d-500">
 
@@ -37,7 +37,7 @@ const UserJobSheetForm = ({role}:{role:'admin'|'emp'}) => {
           <p>Call Closed</p>
         </div>
 
-        { role === 'emp' && data && data?.filter((job: UserForm) => job.location === 'baripada')
+        { role === 'emp' && data && data?.filter((job: UserForm) => job.location === city)
        .map((item: UserForm) => (
          <div key={item.id} className='grid grid-cols-11 gap-5 pb-3'>
            <p>{item?.email}</p>

@@ -2,7 +2,7 @@
 'use client';
 import { AllComplainForm, UpdatedComplainStatus } from '@/actions/user/complain';
 import { ComplainProps, PropsAuth } from '@/constants';
-import { useQuery } from '@tanstack/react-query';
+import { QueryClient, useQuery } from '@tanstack/react-query';
 import React, { useState, useEffect } from 'react';
 import Loader from './loader';
 import toast from 'react-hot-toast';
@@ -11,8 +11,9 @@ import SearchInput from './SearchById';
 
 
 const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth }) => {
+  const client = new QueryClient()
   const { isLoading, data } = useQuery({
-    queryKey: ['fetchComplain'],
+    queryKey: ['fetchComplain' , client],
     queryFn: async () => {
       const data = await AllComplainForm();
       return data;
@@ -62,7 +63,7 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
 
       <div className="w-full flex flex-col gap-4">
         <div className="w-[2000px] overflow-x-auto border-2 border-[#ffffff3c] rounded-3xl pt-3">
-          <div className="mb-5 border-b-2 border-[#ffffff3c] w-full mx-auto grid grid-cols-7 p-4">
+          <div className=" border-b-2 border-[#ffffff3c] w-full mx-auto grid grid-cols-7 p-4">
             <h2>Email</h2>
             <h2>Name</h2>
             <h2>City</h2>
@@ -73,10 +74,10 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
           </div>
 
           {role === 'admin' && (
-            <div className="!border-none inputbg">
+            <div className=" inputbg">
               {filteredData.length > 0 ? (
                 filteredData.map((item: ComplainProps) => (
-                  <div key={item.id} className="w-full border grid grid-cols-7 p-4 px-2 rounded-xl">
+                  <div key={item.id} className="w-full border-b border-[#ffffff3c] grid grid-cols-7 p-4 px-2 ">
                     <h2>{item.email}</h2>
                     <h2>{item.name}</h2>
                     <h2>{item.city}</h2>
@@ -101,12 +102,12 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
             </div>
           )}
 
-          {role === 'emp' && (
+          {role === 'emp' && user?.city &&(
             <div className="!border-none inputbg">
               {filteredData
                 .filter((item: ComplainProps) => item?.city === user?.city)
                 .map((item: ComplainProps) => (
-                  <div key={item.id} className="w-full border grid grid-cols-7 p-4 px-2 rounded-xl">
+                  <div key={item.id} className="w-full border-b border-[#ffffff3c] grid grid-cols-7 p-4 px-2 ">
                     <h2>{item.email}</h2>
                     <h2>{item.name}</h2>
                     <h2>{item.city}</h2>
@@ -117,9 +118,9 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
                       onChange={(e) => onSubmitStatus(item.id, e.target.value)}
                       name="status"
                       defaultValue={item.status}
-                      className="rounded-xl bg-transparent w-40 border-b-2 border-[#ffffff3c] p-2"
+                      className="rounded-xl outline-none bg-transparent w-40 border-b-2 border-[#ffffff3c] p-2"
                     >
-                      <option value="Pending">Pending</option>
+                      {/* <option value="Pending">Pending</option> */}
                       <option value="New">New</option>
                       <option value="Closed">Closed</option>
                     </select>

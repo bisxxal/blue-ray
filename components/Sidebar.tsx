@@ -33,7 +33,7 @@ const AdminSidebar = ({role}:SidebarProps) => {
             role === 'emp' && (
               <>
               <Link className={` ${pathname === '/emp' ? ' sidebg ' : '  text-[#bcbcbcde] border-[#bcbcbcde] '}  hover:scale-110 transition-all  border mt-3 p-2 flex items-center gap-2 text-lg rounded-2xl `} href='/emp'><FaHome /> Home</Link>
-              <Link className={` ${pathname === '/emp/form' ? ' sidebg ' : ' text-[#bcbcbcde] border-[#bcbcbcde]   '} hover:scale-110 transition-all border mt-3 p-2 flex items-center gap-2 text-lg rounded-2xl `} href='/emp/form'><FaWpforms />Forms</Link>
+              <Link className={` ${pathname === '/emp/jobsheet' ? ' sidebg ' : ' text-[#bcbcbcde] border-[#bcbcbcde]   '} hover:scale-110 transition-all border mt-3 p-2 flex items-center gap-2 text-lg rounded-2xl `} href='/emp/jobsheet'><FaWpforms />Jobsheet</Link>
               <Link className={` ${pathname === '/emp/complain' ? ' sidebg ' : ' text-[#bcbcbcde] border-[#bcbcbcde]  '} hover:scale-110 transition-all border mt-3 p-2 flex items-center gap-2 text-lg rounded-2xl `} href='/emp/complain'><LuDraftingCompass />Complain</Link>
               <Link className={` ${pathname === '/emp/income' ? ' sidebg ' : ' text-[#bcbcbcde] border-[#bcbcbcde]  '} hover:scale-110 transition-all border mt-3 p-2 flex items-center gap-2 text-lg rounded-2xl `} href='/emp/income'><BsCashCoin />Income</Link>
               <Link className={` ${pathname === '/emp/userform' ? ' sidebg ' : ' text-[#bcbcbcde] border-[#bcbcbcde]  '} hover:scale-110 transition-all border mt-3 p-2 flex items-center gap-2 text-lg rounded-2xl `} href='/emp/userform'><FaWpforms />User form</Link>
