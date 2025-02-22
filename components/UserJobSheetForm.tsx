@@ -7,7 +7,7 @@ import Loader from './loader';
  
 const UserJobSheetForm = ({role , city}:{role:'admin'|'emp' , city?:string}) => {
 
-    const { isLoading, isError, data, error } = useQuery({
+    const { isLoading, data } = useQuery({
         queryKey: ['fetchuserform'],
         queryFn: async () => {
             const data = await AllUsersForm()

@@ -3,7 +3,11 @@
 import jsPDF from 'jspdf'; 
 import html2canvas from 'html2canvas';  
 import { FaDownload } from "react-icons/fa";
-const Dowload = ({text}:{text:string}) => {
+
+type textType<T>  ={
+  text:T;
+}
+function Dowload <T extends string | React.ReactNode> ({text}:textType<T>)  {
   const downloadReceipt = () => {
     const element = document.getElementById('receipt');
     if (element) {
