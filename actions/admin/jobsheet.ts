@@ -54,44 +54,88 @@ export const jobSheetAction = async (data:TJobSheet) => {
         return JSON.parse(JSON.stringify({status:404}))
     }
 }
+ 
+export const AllJobSheetAction = async (page: number = 1, limit: number = 4) => {
+    try {
+        // Fetching the total count of records to calculate total pages
+        // const totalJobSheets = await prisma.jobsheet.count();
 
-export const AllJobSheetAction = async () => {
-    try { 
-        const job = await prisma.jobsheet.findMany({
-            orderBy:{
-                createdAt:'desc'    
-            },
-            select: {
-                email: true,
-                address: true,
-                circle: true,
-                product: true,
-                division: true,
-                id: true,
-                madeBy: true,
-                serial:true,  
-                modelno:true,
-                callClosed:true,
-                verifiedBy:true,
-                totalAmount:true,
-                visitDate:true,
-                createdAt:true,
-                complains:{
-                    select:{
-                        status:true,
-                    }
-                },
-            }
-        });
-         
-        return JSON.parse(JSON.stringify(job));  
-        
+        // // Fetching job sheets with pagination
+        // const jobs = await prisma.jobsheet.findMany({
+        //     orderBy: {
+        //         createdAt: 'desc', // Sorting by createdAt
+        //     },
+        //     select: {
+        //         email: true,
+        //         address: true,
+        //         circle: true,
+        //         product: true,
+        //         division: true,
+        //         id: true,
+        //         madeBy: true,
+        //         serial: true,
+        //         modelno: true,
+        //         callClosed: true,
+        //         verifiedBy: true,
+        //         totalAmount: true,
+        //         visitDate: true,
+        //         createdAt: true,
+        //         complains: {
+        //             select: {
+        //                 status: true,
+        //             },
+        //         },
+        //     },
+        //     skip: (page - 1) * limit, // Calculate the number of items to skip based on the page
+        //     take: limit, // Limit the number of records per page
+        // });
+        const [jobs, totalJobSheets] = await prisma.$transaction([
+            
+            prisma.jobsheet.findMany({
+                    orderBy: {
+                        createdAt: 'desc', // Sorting by createdAt
+                    },
+                    select: {
+                        email: true,
+                        address: true,
+                        circle: true,
+                        product: true,
+                        division: true,
+                        id: true,
+                        madeBy: true,
+                        serial: true,
+                        modelno: true,
+                        callClosed: true,
+                        verifiedBy: true,
+                        totalAmount: true,
+                        visitDate: true,
+                        createdAt: true,
+                        complains: {
+                            select: {
+                                status: true,
+                            },
+                        },
+                    },
+                    skip: (page - 1) * limit, // Calculate the number of items to skip based on the page
+                    take: limit, // Limit the number of records per page
+                }),
+
+           prisma.jobsheet.count()
+          ]);
+
+        // Return both the data and the total count for pagination calculations
+        return {
+            data: JSON.parse(JSON.stringify(jobs)),
+            total: totalJobSheets,
+        };
     } catch (error) {
-        console.log(error);  
-        handelError(error, 'JobSheet');  
-        return JSON.parse(JSON.stringify({status:404}))
+        console.log(error);
+        handelError(error, 'JobSheet');
+        return { status: 404 };
     }
-}
+};
+
+
 export const SingleJobSheetAction = async (id:string) => {
     try { 
         const job = await prisma.jobsheet.findMany({

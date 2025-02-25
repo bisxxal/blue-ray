@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 const Navbar = ({ session }: { session?: PropsAuth }) => {
+    
   const role = session?.role;
   const router = useRouter();
   useEffect(() => {
@@ -26,14 +27,14 @@ const Navbar = ({ session }: { session?: PropsAuth }) => {
       </Link>}
 
       <div className="flex items-center gap-9">
-        {!session && session == null ? (
+        {!session && session == null  ?  (
           <SignInButton text={"Sign in"} />
         ) : (
           <>
-            <span>
-              Welcome, {role === "admin" ? "Admin " : " Employee"}{" "}
+           { role !== 'user' && <span>
+              Welcome, {role === "admin" ? "Admin " : " Employee"} 
               <span className=" font-semibold textbase">{session?.name} </span>
-            </span>
+            </span>}
             <Image
               src={session?.image}
               alt="profile"
@@ -43,11 +44,7 @@ const Navbar = ({ session }: { session?: PropsAuth }) => {
             />
             {session && (
               <button
-                className=" flex hover:scale-110 transition-all   items-center justify-between gap-2 buttonred p-6 py-2"
-                onClick={() => signOut()}
-              >
-                
-                Sign Out <FaSignOutAlt />
+                className=" flex hover:scale-110 transition-all   items-center justify-between gap-2 buttonred p-6 py-2"onClick={() => signOut()}>Sign Out <FaSignOutAlt />
               </button>
             )}
           </>

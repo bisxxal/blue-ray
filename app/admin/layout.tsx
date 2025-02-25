@@ -1,3 +1,4 @@
+
 import { currentUser } from "@/actions/admin/role";
 import AdminSidebar from "@/components/Sidebar";
 import Navbar from "@/components/navbar";
@@ -9,7 +10,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await currentUser();
-  if (!user && user?.role === "emp") {
+  if (!user || user?.role === "emp" || user?.role === "user") {
     redirect("/");
   } else {
     return (

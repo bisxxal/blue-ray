@@ -148,6 +148,7 @@ model userform {
   serial           Int
   priority         String
   problem          String
+  call             String @default("not closed")
 
   createdAt DateTime @default(now())
 }

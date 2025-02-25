@@ -1,7 +1,7 @@
 'use client';
-import { useState } from "react";
+
 import { AccessGive, AllEmployee } from '@/actions/admin/adminform'
-import { AccessType, PropsAuth } from '@/constants';
+import { PropsAuth } from '@/constants';
 import { QueryClient, useQuery } from '@tanstack/react-query'
 import toast from 'react-hot-toast' 
 import { FiLoader } from "react-icons/fi";
@@ -24,18 +24,10 @@ const GiveAccess = () => {
   const { isPending, data } = useQuery({
     queryKey: ['fetchEmp' ,queryClient ],
     queryFn: async() => await AllEmployee(), 
-    staleTime: 2000
     })  
 
 
   const giveAccess = async(city:string, id:number) => {
-    // const res = await AccessGive(city,id.toString())
-    // if(res?.status === 200){
-    //   toast.success('Access given');
-    // }
-    // else{
-    //   toast.error('Failed to give access');
-    // }
     await getCookieData(city, id)
   }
   return (

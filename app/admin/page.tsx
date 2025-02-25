@@ -1,7 +1,11 @@
 
+import { AllEmployee } from "@/actions/admin/adminform";
 import React from "react";
 
-const AdminIndex = () => {
+const AdminIndex = async() => {
+
+  // const data = await AllEmployee()
+  
   return (
     <div className="w-full  px-20 min-h-screen ">
       <div className=" textbase my-10 mb-20 relative rounded-3xl   flex flex-col items-center justify-center ">

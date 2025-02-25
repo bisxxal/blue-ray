@@ -5,7 +5,6 @@ import { jobSheet, TJobSheet } from '@/lib/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import DatePicker from 'react-datepicker';
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
@@ -35,9 +34,8 @@ const Jobsheet = ({id}:{id?:string}) => {
      staleTime: 2000,
      enabled: !!id,
    });
-
    const job:JOBSheetData = data?.job
-   console.log(job)
+   
   return (
     <div className=' w-full h-screen flex gap-6 pt-10 items-center flex-col '>
       <h1 className=' font-bold text-center text-4xl '>BlueRay_Jobsheet</h1>

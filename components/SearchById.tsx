@@ -5,10 +5,11 @@ interface SearchInputProps {
   placeholder?: string;
   onSearch: (value: string) => void;
   debounceTime?: number;
+  urldata?: string;
 }
 
-const SearchInput: React.FC<SearchInputProps> = ({ placeholder = 'Search...', onSearch, debounceTime = 300 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+const SearchInput: React.FC<SearchInputProps> = ({ placeholder = 'Search...', onSearch, debounceTime = 300  , urldata }) => {
+  const [searchTerm, setSearchTerm] = useState(urldata || '');
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -24,7 +25,8 @@ const SearchInput: React.FC<SearchInputProps> = ({ placeholder = 'Search...', on
     <input
       type="text"
       placeholder={placeholder}
-      value={searchTerm}
+      value={searchTerm || urldata}
+      // defaultValue={ urldata || ''}
       onChange={(e) => setSearchTerm(e.target.value)}
       className="py-1 outline-none w-full bg-transparent "
       />

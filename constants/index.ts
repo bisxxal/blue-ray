@@ -40,6 +40,7 @@ export interface UserForm {
   serial: number;
   priority: string;
   problem: string;
+  call: string;
 }
 
 export interface revenueTypesProps {

@@ -8,9 +8,16 @@ import Loader from './loader';
 import toast from 'react-hot-toast';
 import moment from 'moment';
 import SearchInput from './SearchById';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 
 const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth }) => {
+
+  const path = useSearchParams()
+  console.log(path.get('search'))
+  const search = path.get('search')
+  const [searchTerm, setSearchTerm] = useState<string>(path.get('search') || '');
+
   const client = new QueryClient()
   const { isLoading, data } = useQuery({
     queryKey: ['fetchComplain' , client],
@@ -59,7 +66,7 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
     <div className="w-full h-screen flex gap-6 pt-10 items-center flex-col px-4">
       <h1 className="text-center text-2xl font-bold">User's Complaint</h1>
 
-      <SearchInput placeholder="Search by Complain ID..." onSearch={handleSearch} />
+      <SearchInput placeholder="Search by Complain ID..." onSearch={handleSearch} urldata={search || ''}/>
 
       <div className="w-full flex flex-col gap-4">
         <div className="w-[2000px] overflow-x-auto border-2 border-[#ffffff3c] rounded-3xl pt-3">
@@ -77,7 +84,7 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
             <div className=" inputbg">
               {filteredData.length > 0 ? (
                 filteredData.map((item: ComplainProps) => (
-                  <div key={item.id} className="w-full border-b border-[#ffffff3c] grid grid-cols-7 p-4 px-2 ">
+                  <div key={item.id} className="w-full border-b hover:bg-[#466bfe64] rounded-xl transition-all border-[#ffffff3c] grid grid-cols-7 p-4 px-2 ">
                     <h2>{item.email}</h2>
                     <h2>{item.name}</h2>
                     <h2>{item.city}</h2>
@@ -90,7 +97,7 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
                       defaultValue={item.status}
                       className="rounded-xl bg-transparent w-40 border-b-2 border-[#ffffff3c] p-2"
                     >
-                      <option value="Pending">Pending</option>
+                      {/* <option value="Pending">Pending</option> */}
                       <option value="New">New</option>
                       <option value="Closed">Closed</option>
                     </select>
@@ -107,7 +114,7 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
               {filteredData
                 .filter((item: ComplainProps) => item?.city === user?.city)
                 .map((item: ComplainProps) => (
-                  <div key={item.id} className="w-full border-b border-[#ffffff3c] grid grid-cols-7 p-4 px-2 ">
+                  <div key={item.id} className="w-full border-b border-[#ffffff3c] hover:bg-[#466bfe64] rounded-xl transition-all grid grid-cols-7 p-4 px-2 ">
                     <h2>{item.email}</h2>
                     <h2>{item.name}</h2>
                     <h2>{item.city}</h2>

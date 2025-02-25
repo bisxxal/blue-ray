@@ -6,7 +6,18 @@ import { SessionProvider } from 'next-auth/react'
 
 type Props = { children: React.ReactNode }
 
-const client = new QueryClient()
+const client = new QueryClient({
+  defaultOptions:{
+    queries:{
+      refetchOnWindowFocus: false,
+      retry: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
+      staleTime: 10000
+    }
+  }
+})
 
 const ReactQueryProvider = ({ children }: Props) => {
   return <QueryClientProvider client={client}>

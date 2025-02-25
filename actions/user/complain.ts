@@ -117,6 +117,7 @@ export const AllUsersForm  = async () => {
                 serial: true,
                 priority:   true,
                 problem:    true,
+                call: true,
             }
         });
          
@@ -125,6 +126,27 @@ export const AllUsersForm  = async () => {
     } catch (error) {
         console.log(error);  
         handelError(error, 'JobSheet');  
+        return JSON.parse(JSON.stringify({status:404}))
+    }
+}
+export const UpdateUserFormCall = async (id:string , call:string) => {
+    try {
+        const updated = await prisma.userform.update({
+            where:{
+                id:id
+            },
+            data:{
+                call : call
+            }
+        })
+        console.log(updated)
+        if(updated){
+        return JSON.parse(JSON.stringify({status:200}))}
+        else{
+            return JSON.parse(JSON.stringify({status:404}))
+        }
+    } catch (error) {
+        // console.log(error)
         return JSON.parse(JSON.stringify({status:404}))
     }
 }

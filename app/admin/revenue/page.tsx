@@ -7,10 +7,13 @@ import { Bar, BarChart, CartesianGrid, Legend, Pie, PieChart, ResponsiveContaine
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import EmpIncomePage from "@/app/emp/income/page";
 
 const Revenue = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [selectedEmail, setSelectedEmail] = useState<string>('');
+  const [showEmpIncome, setShowEmpIncome] = useState<boolean>(false);
 
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ["fetchRevenue"],
@@ -60,7 +63,7 @@ const Revenue = () => {
   }));
   
   return (
-    <div className="w-full min-h-screen ">
+    <div className="w-full min-h-screen flex flex-col items-center justify-center gap-7">
       <h1 className="text-3xl text-center mb-10 font-bold">Revenue</h1>
 
       <div className="flex justify-center gap-4 mb-6">
@@ -127,7 +130,8 @@ const Revenue = () => {
                 innerRadius={0}
                 outerRadius={110}
                 fill="#8884d8"
-                label={(entry) => `${entry.name} - ₹${entry.value}`}
+                // label={(entry) => `${entry.name} - ₹${entry.value}`}
+                label={(entry) => `${entry.name}`}
               />
               <Tooltip />
             </PieChart>
@@ -147,7 +151,26 @@ const Revenue = () => {
                  <Bar dataKey="value" fill="#82ca9d" />
                </BarChart>
              </ResponsiveContainer>
+             
 
+<button onClick={()=>setShowEmpIncome(!showEmpIncome)} className={` ${showEmpIncome? 'buttonred' :" buttongreen "} mx-auto  text-lg font-bold p-5 `}> {showEmpIncome ? 'Hide':'Show'} Employee Income </button>
+
+{   showEmpIncome  && <div className=" w-full ">
+
+      <h1 className=" text-4xl font-bold textbase mt-10 text-center"> Users revenue </h1>
+
+      <div className="flex flex-col text-lg justify-center items-center my-10 gap-4 mb-6">
+        <p>Selected employee</p>
+      <select className=" px-6" onChange={(e)=>setSelectedEmail(e.target.value)} >
+        <option value="bbgudul@gmail.com">bbgudul@gmail.com</option>
+        <option value="bishalkandi859494@gmail.com">bishalkandi859494@gmail.com</option>
+        <option value="bisxgugu7012@gmail.com">bisxgugu7012@gmail.com</option>
+      </select>
+      </div>
+
+      <EmpIncomePage selectedEmail={selectedEmail} />
+      </div> 
+    }
 
     </div>
   );

@@ -17,7 +17,7 @@ export default async function Home() {
       <div className=" mt-[70px] min-h-screen flex justify-center items-center text-3xl font-bold w-full ">
     {user ? 
      <div>
-      <Link className="flex items-center gap-2 textbase underline" href={`/${user.role}`}>Go to {user.role} Dashboard <GoArrowUpRight /></Link>
+      <Link className="flex capitalize hover:scale-125 transition-all  items-center gap-2 textbase underline" href={`/${user.role}`}>Go to {user.role} Dashboard <GoArrowUpRight /></Link>
     </div> :<h1> public page </h1>}
       </div>
     </div>

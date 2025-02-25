@@ -28,16 +28,16 @@ export const reveneueAction = async () => {
 }
 
 
-export const reveneueActionForEmp = async (year: number) => {
+export const reveneueActionForEmp = async (year: number , email:string) => {
   try {
-      const session = await getServerSession(authOptions)
+      // const session = await getServerSession(authOptions)
     const data = await prisma.jobsheet.findMany({
       where: {
         createdAt: {
           gte: new Date(`${year}-01-01T00:00:00.000Z`), 
           lte: new Date(`${year}-12-31T23:59:59.999Z`),   
         },
-        madeBy: session?.user?.email!,
+        madeBy: email!,
       },
       select: {
         totalAmount: true,
