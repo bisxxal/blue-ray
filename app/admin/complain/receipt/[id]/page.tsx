@@ -1,4 +1,4 @@
-import Dowload from '@/components/Download'
+import Dowload from '@/components/elements/Download'
 import React from 'react'
 
 const ReciptIdPage = () => {

@@ -16,7 +16,6 @@ model User {
 
   accounts Account[]
   sessions Session[]
-  // emp mp?
 
   role String? @default("user")
   city String? @default("jajpur")
@@ -115,7 +114,6 @@ model complains {
   id        String   @id @default(cuid())
   name   String
   email     String
-  complainId String
   city     String
   description String
   status String @default("New") 
@@ -125,15 +123,6 @@ model complains {
   createdAt DateTime @default(now())
 }
 
-model emp {
-  id    String @id @default(cuid())
-  name  String
-  email String
-  area  String
-  // UserId   String
-
-  createdAt DateTime @default(now())
-}
 
 model userform {
   id String @id @default(cuid())
@@ -149,6 +138,15 @@ model userform {
   priority         String
   problem          String
   call             String @default("not closed")
+
+  createdAt DateTime @default(now())
+}
+
+model emp {
+  id    String @id @default(cuid())
+  name  String
+  email String
+  area  String
 
   createdAt DateTime @default(now())
 }

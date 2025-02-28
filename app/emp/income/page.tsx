@@ -1,6 +1,7 @@
 "use client";
 import { reveneueActionForEmp } from "@/actions/admin/revenue";
-import Loader from "@/components/loader";
+import Loader from "@/components/elements/loader";
+import Refresh from "@/components/elements/refresh";
 import { revenueTypesProps } from "@/constants";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
@@ -8,11 +9,14 @@ import React, { useState } from "react";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, } from "recharts";
 
 const EmpIncomePage = ({ selectedEmail }: { selectedEmail?: string }) => {
-  const { data: session, status } = useSession();
-  const email = selectedEmail ? selectedEmail: (session?.user?.email as string);
+  const { data: session } = useSession();
+
+  const email = selectedEmail ? selectedEmail: (session?.user?.email as string)  ;
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(2025);
+
+  // console.log(session)
 
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ["fetchRevenue", selectedYear, email],
@@ -24,13 +28,13 @@ const EmpIncomePage = ({ selectedEmail }: { selectedEmail?: string }) => {
       return fetchedData;
     },
     enabled: !!email,
-    staleTime: 60000,
+    staleTime: 100000,
   });
 
   if (isLoading) return <Loader />;
-  if (isError) return <p>Error fetching revenue data: {error.message}</p>;
+  if (isError) return  <Refresh data='Error while fetching data' />;;
 
-  const filteredData = data.filter((item: revenueTypesProps) => {
+  const filteredData = data?.filter((item: revenueTypesProps) => {
     const createdAt = new Date(item.createdAt);
     return (
       (!startDate || createdAt >= startDate) &&
@@ -41,7 +45,7 @@ const EmpIncomePage = ({ selectedEmail }: { selectedEmail?: string }) => {
   const allMonths = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
 
   // Aggregate the data for revenue and job counts
-  const aggregatedData = filteredData.reduce(
+  const aggregatedData = filteredData?.reduce(
     (acc: any, item: revenueTypesProps) => {
       const date = new Date(item.createdAt);
       const month = date.toLocaleString("default", { month: "short" });
@@ -50,7 +54,7 @@ const EmpIncomePage = ({ selectedEmail }: { selectedEmail?: string }) => {
       if (!acc[month]) {
         acc[month] = { totalAmount: 0, TotalJobsheet: 0 };
       }
-      acc[month].totalAmount += item.totalAmount;
+      acc[month].totalAmount += item?.totalAmount;
 
       // Aggregate total jobsheets made
       acc[month].TotalJobsheet += 1;
@@ -60,7 +64,7 @@ const EmpIncomePage = ({ selectedEmail }: { selectedEmail?: string }) => {
     {}
   );
 
-  const chartData = allMonths.map((month) => ({
+  const chartData = allMonths?.map((month) => ({
     month: month,
     totalAmount: aggregatedData[month]?.totalAmount || 0,
     TotalJobsheet: aggregatedData[month]?.TotalJobsheet || 0,
@@ -68,18 +72,15 @@ const EmpIncomePage = ({ selectedEmail }: { selectedEmail?: string }) => {
 
   return (
     <div className=" w-full min-h-screen">
-      <h1 className="text-3xl text-center mb-10 font-bold">Revenue</h1>
-
+      {/* <h1 className="text-3xl text-center mb-10 font-bold">Revenue</h1> */}
       <div className="flex justify-center gap-4 mb-6">
-        <div>
-          <label className="block text-lg mb-5 font-semibold">
-            Select Year
-          </label>
+        <div> 
+          <label className="mr-5 text-lg mb-5 font-semibold">Select Year</label>
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="border inputbg bg-transparent px-6 py-2 text-lg rounded-lg"
-          >
+            className="border inputbg bg-transparent px-6 py-2 text-lg rounded-lg">
+
             <option value={2025}>2025</option>
             <option value={2024}>2024</option>
             <option value={2023}>2023</option>

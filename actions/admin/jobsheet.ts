@@ -8,36 +8,16 @@ import { getServerSession } from "next-auth"
 
 export const jobSheetAction = async (data:TJobSheet) => {
     try {
-        // console.log('first',data)
         const session = await getServerSession(authOptions)
         const { email , address , circle , product , division , serial , modelno , earthing , stabilizer , IPVoltage , OPVoltage , grillTemperature , roomTemperature , ambientTemperature , technicianName , visitDate , faultFound , actionTaken , extraMaterial , copperPipe , drainPipe , wire , ODUStand , PinPlug , airFilter , technicianComments , newSparepartConsumed , PartReplacementDetails  } = data      
         const job = await prisma.jobsheet.create({
-            data:{
-                email,
-                address,
-                circle,
-                product,
-                division,
-                serial,
-                modelno ,
-                earthing,
-                stabilizer,
-                IPVoltage,
-                OPVoltage,
-                grillTemperature,
-                roomTemperature,
-                ambientTemperature,
-                technicianName,
-                visitDate,
-                faultFound,
-                actionTaken,
-                extraMaterial,
+            data:{ email, address, circle, product, division, serial, modelno , earthing, stabilizer, IPVoltage, OPVoltage, grillTemperature, roomTemperature, ambientTemperature, technicianName, visitDate, faultFound, actionTaken, extraMaterial,
                 copperPipe:data?.copperPipe! as number,
                 drainPipe:data?.drainPipe! as number,
                 wire:data?.wire! as number,
                 ODUStand:data?.ODUStand! as number,
                 PinPlug:data.PinPlug! as number,
-                airFilter:data?.airFilter! as number,
+                airFilter:airFilter as number,
                 technicianComments,
                 newSparepartConsumed,
                 PartReplacementDetail:data.PartReplacementDetails ? data.PartReplacementDetails : [],
@@ -57,43 +37,11 @@ export const jobSheetAction = async (data:TJobSheet) => {
  
 export const AllJobSheetAction = async (page: number = 1, limit: number = 4) => {
     try {
-        // Fetching the total count of records to calculate total pages
-        // const totalJobSheets = await prisma.jobsheet.count();
-
-        // // Fetching job sheets with pagination
-        // const jobs = await prisma.jobsheet.findMany({
-        //     orderBy: {
-        //         createdAt: 'desc', // Sorting by createdAt
-        //     },
-        //     select: {
-        //         email: true,
-        //         address: true,
-        //         circle: true,
-        //         product: true,
-        //         division: true,
-        //         id: true,
-        //         madeBy: true,
-        //         serial: true,
-        //         modelno: true,
-        //         callClosed: true,
-        //         verifiedBy: true,
-        //         totalAmount: true,
-        //         visitDate: true,
-        //         createdAt: true,
-        //         complains: {
-        //             select: {
-        //                 status: true,
-        //             },
-        //         },
-        //     },
-        //     skip: (page - 1) * limit, // Calculate the number of items to skip based on the page
-        //     take: limit, // Limit the number of records per page
-        // });
-        const [jobs, totalJobSheets] = await prisma.$transaction([
+        const [jobs, total] = await prisma.$transaction([
             
             prisma.jobsheet.findMany({
                     orderBy: {
-                        createdAt: 'desc', // Sorting by createdAt
+                        createdAt: 'asc',  
                     },
                     select: {
                         email: true,
@@ -116,22 +64,18 @@ export const AllJobSheetAction = async (page: number = 1, limit: number = 4) => 
                             },
                         },
                     },
-                    skip: (page - 1) * limit, // Calculate the number of items to skip based on the page
-                    take: limit, // Limit the number of records per page
+                    skip: (page - 1) * limit,  
+                    take: limit, 
                 }),
 
            prisma.jobsheet.count()
           ]);
-
-        // Return both the data and the total count for pagination calculations
-        return {
-            data: JSON.parse(JSON.stringify(jobs)),
-            total: totalJobSheets,
-        };
+        
+        return JSON.parse(JSON.stringify({data:jobs , total}))
     } catch (error) {
         console.log(error);
         handelError(error, 'JobSheet');
-        return { status: 404 };
+        return JSON.parse(JSON.stringify({status:404}))
     }
 };
 
@@ -182,12 +126,12 @@ export const VerifyJobSheet = async (id:string ,callClosed:string , verified:str
 
 export const deleteJobSheet = async (id:string) => {
     try {
-        await prisma.jobsheet.delete({
-            where:{
-                id
-            }
-        })
-        return JSON.parse(JSON.stringify({status:200}))
+        // await prisma.jobsheet.delete({
+        //     where:{
+        //         id
+        //     }
+        // })
+        // return JSON.parse(JSON.stringify({status:200}))
     } catch (error) {
         handelError(error , 'deleteJobSheet')
         return JSON.parse(JSON.stringify({status:404}))

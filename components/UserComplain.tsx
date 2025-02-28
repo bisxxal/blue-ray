@@ -4,11 +4,12 @@ import { AllComplainForm, UpdatedComplainStatus } from '@/actions/user/complain'
 import { ComplainProps, PropsAuth } from '@/constants';
 import { QueryClient, useQuery } from '@tanstack/react-query';
 import React, { useState, useEffect } from 'react';
-import Loader from './loader';
+import Loader from './elements/loader';
 import toast from 'react-hot-toast';
 import moment from 'moment';
-import SearchInput from './SearchById';
+import SearchInput from './elements/SearchById';
 import { usePathname, useSearchParams } from 'next/navigation';
+import Refresh from './elements/refresh';
 
 
 const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth }) => {
@@ -19,7 +20,7 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
   const [searchTerm, setSearchTerm] = useState<string>(path.get('search') || '');
 
   const client = new QueryClient()
-  const { isLoading, data } = useQuery({
+  const { isLoading, data  ,isError} = useQuery({
     queryKey: ['fetchComplain' , client],
     queryFn: async () => {
       const data = await AllComplainForm();
@@ -45,13 +46,15 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
     }
 
     const filtered = data.filter((item: ComplainProps) =>
-      item.complainId.toLowerCase().includes(searchTerm.toLowerCase())
+      item.jobSheetId.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     setFilteredData(filtered.length > 0 ? filtered : []);
   };
 
   if (isLoading) return <Loader />;
+  if (isError) return <Refresh data='Error while fetching data' />;
+
 
   const onSubmitStatus = async (id: string, status: string) => {
     const res = await UpdatedComplainStatus(id, status);
@@ -82,13 +85,13 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
 
           {role === 'admin' && (
             <div className=" inputbg">
-              {filteredData.length > 0 ? (
+              {filteredData.length > 0 && (
                 filteredData.map((item: ComplainProps) => (
                   <div key={item.id} className="w-full border-b hover:bg-[#466bfe64] rounded-xl transition-all border-[#ffffff3c] grid grid-cols-7 p-4 px-2 ">
                     <h2>{item.email}</h2>
                     <h2>{item.name}</h2>
                     <h2>{item.city}</h2>
-                    <h2>{item.complainId}</h2>
+                    <h2>{item.jobSheetId}</h2>
                     <h2>{item.description}</h2>
                     <h2>{moment(item?.createdAt).format('Do MMM YY')}</h2>
                     <select
@@ -103,8 +106,6 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
                     </select>
                   </div>
                 ))
-              ) : (
-                <p className="text-center text-gray-400 p-4">No complaints found</p>
               )}
             </div>
           )}
@@ -118,7 +119,7 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
                     <h2>{item.email}</h2>
                     <h2>{item.name}</h2>
                     <h2>{item.city}</h2>
-                    <h2>{item.complainId}</h2>
+                    <h2>{item.jobSheetId}</h2>
                     <h2>{item.description}</h2>
                     <h2>{moment(item?.createdAt).format('Do MMM YY')}</h2>
                     <select
@@ -134,6 +135,10 @@ const UserComplain = ({ role, user }: { role: 'emp' | 'admin'; user?: PropsAuth 
                   </div>
                 ))}
             </div>
+          )}
+
+          {filteredData.length === 0 && (
+            <p className="text-center text-gray-400 p-4">No complaints found</p>
           )}
         </div>
       </div>

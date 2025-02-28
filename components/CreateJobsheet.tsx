@@ -3,32 +3,36 @@ import { FeatchJOBSheetData, jobSheetAction } from '@/actions/admin/jobsheet';
 import { JOBSheetData } from '@/constants';
 import { jobSheet, TJobSheet } from '@/lib/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
+import Loader from './elements/loader';
+import Refresh from './elements/refresh';
+import DatePicker from 'react-datepicker';
       
 const Jobsheet = ({id}:{id?:string}) => {
-    const { register, handleSubmit , formState:{errors , isSubmitting},reset, } = useForm<TJobSheet>({resolver:zodResolver(jobSheet)})
+
+    const client = useQueryClient();
+    const { register, handleSubmit ,control, formState:{errors , isSubmitting},reset, } = useForm<TJobSheet>({resolver:zodResolver(jobSheet)})
 
      const onSubmit = async(data:TJobSheet) => {
       const res= await jobSheetAction(data)
-     console.log(data)
-
      if(res?.status === 200){
           toast.success('Job sheet created');
+          reset()
+          await client.invalidateQueries({ queryKey: ['fetchjob'] });
      }
      else{
           toast.error('Something went wrong');
      }
-
-     console.log(data)
+     // console.log(data)
     }
     const [showMaterial, setShowMaterial] = useState('false')
     const [showSpare, setshowSpare] = useState('false')
 
-    const { isLoading, data } = useQuery({
+    const { isLoading, data ,isPending , isError } = useQuery({
      queryKey: ["josheetData" ,id],
      queryFn: async () => id ? await FeatchJOBSheetData(id) : Promise.reject('ID is undefined'),
      staleTime: 2000,
@@ -36,13 +40,13 @@ const Jobsheet = ({id}:{id?:string}) => {
    });
    const job:JOBSheetData = data?.job
    
+   if (isLoading) return <Loader />;
+  if (isError) return  <Refresh data='Error while fetching data' />;
+  
   return (
     <div className=' w-full h-screen flex gap-6 pt-10 items-center flex-col '>
       <h1 className=' font-bold text-center text-4xl '>BlueRay_Jobsheet</h1>
-
-      {!id ? <h2 className=' text-center text-2xl'>Please Fill the form </h2> : 
-          <h2 className=' text-center text-2xl'>Update form</h2>
-      }
+      {!id ? <h2 className=' text-center text-2xl'>Please Fill the form </h2> : <h2 className=' text-center text-2xl'>Update form</h2> }
  
         <form className=' flex flex-col w-5/6  !mx-auto gap-3' onSubmit={handleSubmit(onSubmit)}> 
 
@@ -50,19 +54,18 @@ const Jobsheet = ({id}:{id?:string}) => {
          <textarea defaultValue={job?.address} className=' bg-transparent inputbg rounded-xl w-full block mt-3 border p-2'  {...register("address")}  placeholder='address '/>
         {errors?.address && <span className='text-red-600 text-sm'>{errors?.address?.message}</span>}
 
-
-<div className='w-full justify-between flex gap-10 mt-4'>
-<div className=' w-1/2'>
-<h3>Circle*</h3>
-       <select defaultValue={job?.circle} className=' w-full block capitalize inputbg mt-3' {...register("circle")} >
-            <option value="balasore">balasore</option>
-            <option value="keonjhar">keonjhar</option>
-            <option value="jajpur">jajpur</option>
-            <option value="baripada">baripada</option>
-            <option value="Bhadrak">Bhadrak</option>
-       </select>
-       {errors.circle && <span className='text-red-600 text-sm'>{errors?.circle?.message}</span>}
-</div>
+          <div className='w-full justify-between flex gap-10 mt-4'>
+          <div className=' w-1/2'>
+          <h3>Circle*</h3>
+               <select defaultValue={job?.circle} className=' w-full block capitalize inputbg mt-3' {...register("circle")} >
+                    <option value="balasore">balasore</option>
+                    <option value="keonjhar">keonjhar</option>
+                    <option value="jajpur">jajpur</option>
+                    <option value="baripada">baripada</option>
+                    <option value="Bhadrak">Bhadrak</option>
+               </select>
+               {errors.circle && <span className='text-red-600 text-sm'>{errors?.circle?.message}</span>}
+          </div>
 
        <div className=' w-1/2 '>
        <label>Division*</label>
@@ -173,7 +176,20 @@ const Jobsheet = ({id}:{id?:string}) => {
        </select>  {errors.technicianName && <span className='text-red-600 text-sm'>{errors?.technicianName?.message}</span>}
         
           <label>Date of Visit*</label>
-          <input  className='p-2 rounded-xl inputbg bg-transparent' type="datetime-local" {...register("visitDate")}/>
+
+          <Controller
+          name="visitDate"
+          control={control}
+          render={({ field }) => (
+          <DatePicker
+               selected={field.value }
+               onChange={(date: Date | null) => field.onChange(date)}
+               dateFormat="yyyy/MM/dd"
+               className="p-2 rounded-xl w-full inputbg bg-transparent"
+               placeholderText="Select Date"
+          />
+          )}
+     />
           {errors?.visitDate && <span className='text-red-600 text-sm'>{errors?.visitDate?.message}</span>}
  
           <label>Fault Found *</label>
@@ -311,7 +327,7 @@ const Jobsheet = ({id}:{id?:string}) => {
         {errors.PartReplacementDetails && <span className='text-red-600 text-sm'>{errors?.PartReplacementDetails?.message}</span>}
 
         </div>}
-        <button className=' px-5 py-3  mt-10 buttonbg w-24' disabled={isSubmitting} type="submit">{isSubmitting ? <FiLoader className=' animate-spin' /> :"Sumbit"}</button>
+        <button className=' px-5 py-3 flex items-center justify-center mt-10 buttonbg w-24' disabled={isSubmitting} type="submit">{isSubmitting ? <FiLoader className=' animate-spin' /> :"Sumbit"}</button>
         </form>
     </div>
   )

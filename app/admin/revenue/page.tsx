@@ -1,6 +1,6 @@
 "use client";
 import { reveneueAction } from "@/actions/admin/revenue";
-import Loader from "@/components/loader";
+import Loader from "@/components/elements/loader";
 import { revenueTypesProps } from "@/constants";
 import { useQuery } from "@tanstack/react-query";
 import { Bar, BarChart, CartesianGrid, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -8,6 +8,7 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import EmpIncomePage from "@/app/emp/income/page";
+import Refresh from "@/components/elements/refresh";
 
 const Revenue = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -21,11 +22,11 @@ const Revenue = () => {
       const fetchedData = await reveneueAction();
       return fetchedData;
     },
-    staleTime: 60000,
+    staleTime: 100000,
   });
 
   if (isLoading) return <Loader />;
-  if (isError) return <p>Error fetching revenue data: {error.message}</p>;
+  if (isError) return  <Refresh data='Error while fetching data' />;;
 
   const filteredData = data.filter((item: revenueTypesProps) => {
     const itemDate = new Date(item.createdAt);
@@ -34,6 +35,8 @@ const Revenue = () => {
       (!endDate || itemDate <= endDate)
     );
   });
+
+  console.log(filteredData);
 
   const groupedByProduct = filteredData.reduce((acc: any, item: revenueTypesProps) => {
     const { product, totalAmount } = item;
@@ -62,6 +65,38 @@ const Revenue = () => {
     value: revenueByAction[action],
   }));
   
+
+
+
+
+  const allMonths = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+  
+    const aggregatedData = filteredData?.reduce(
+      (acc: any, item: revenueTypesProps) => {
+        const date = new Date(item.createdAt);
+        const month = date.toLocaleString("default", { month: "short" });
+  
+        if (!acc[month]) {
+          acc[month] = { totalAmount: 0, TotalJobsheet: 0 };
+        }
+        acc[month].totalAmount += item?.totalAmount;
+  
+        // Aggregate total jobsheets made
+        acc[month].TotalJobsheet += 1;
+  
+        return acc;
+      },
+      {}
+    );
+  
+    const chartData = allMonths?.map((month) => ({
+      month: month,
+      totalAmount: aggregatedData[month]?.totalAmount || 0,
+      TotalJobsheet: aggregatedData[month]?.TotalJobsheet || 0,
+    }));
+
+    console.log("chaet",chartData)
+
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center gap-7">
       <h1 className="text-3xl text-center mb-10 font-bold">Revenue</h1>
@@ -106,7 +141,8 @@ const Revenue = () => {
                 innerRadius={0}
                 outerRadius={110}
                 fill="#82ca9d"
-                label={(entry) => `${entry.name} - ₹${entry.value}`}
+                // label={(entry) => `${entry.name} - ₹${entry.value}`}
+                label={(entry) => `${entry.name}`}
               />
               <Tooltip />
             </PieChart>
@@ -140,17 +176,18 @@ const Revenue = () => {
           <p className=" text-center my-10">No data found</p>}
         </div>
       </div>
-
-          <ResponsiveContainer width="100%" height={300}>
-               <BarChart width={730} height={250} data={actionRevenueData}>
-                 <CartesianGrid strokeDasharray="3 3" />
-                 <XAxis dataKey="month" name="name" />
-                 <YAxis />
-                 <Tooltip />
-                 <Legend />
-                 <Bar dataKey="value" fill="#82ca9d" />
-               </BarChart>
-             </ResponsiveContainer>
+ 
+    <ResponsiveContainer width="100%" height={300}>
+            <BarChart width={730} height={250} data={chartData}>
+              <CartesianGrid strokeDasharray="2 2" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="TotalJobsheet" fill="#8884d8" />
+              <Bar dataKey="totalAmount" fill="#82ca9d" />
+            </BarChart>
+        </ResponsiveContainer>
              
 
 <button onClick={()=>setShowEmpIncome(!showEmpIncome)} className={` ${showEmpIncome? 'buttonred' :" buttongreen "} mx-auto  text-lg font-bold p-5 `}> {showEmpIncome ? 'Hide':'Show'} Employee Income </button>

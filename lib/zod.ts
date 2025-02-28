@@ -16,7 +16,7 @@ export const jobSheet = z.object({
     roomTemperature:z.coerce.number(),
     ambientTemperature:z.coerce.number(),
     technicianName:z.string().min(2 ,'TechnicianName must be atleast 2 characters'),  
-    visitDate:z.coerce.date({ message: "Visted time is required!" }),
+    visitDate:z.date({ message: "Visted time is required!" }),
     faultFound:z.string().min(2 ,'Fault found must be atleast 2 characters'),
     actionTaken:z.string().array(),
     extraMaterial:z.string(),
@@ -36,7 +36,7 @@ export const userComplainForm = z.object({
     name: z.string().min(3 ,'name must be atleast 3 characters'),
     email: z.string().email('Invalid email'),
     city: z.string(),
-    complainId: z.string().min(1, { message: "complain Id is required!" }),
+    jobSheetId: z.string().min(1, { message: "complain Id is required!" }),
     description: z.string().min(3 ,'description must be atleast 3 characters'),
   })
 export type TuserComplainForm = z.infer<typeof userComplainForm>  
@@ -50,7 +50,7 @@ export type TcreateEmp = z.infer<typeof createEmp>
 
 
 export const userForm = z.object({
-  informationDate:z.coerce.date({ message: "Date is required!" }),
+  informationDate:z.date({ message: "Visted time is required!" }),
   location:z.string().min(2 ,'location must be atleast 2 characters'),
   email: z.string().email('Invalid email'),
   machineInstalled:z.string().min(2 ,'Machine Installed must be atleast 2 characters'),

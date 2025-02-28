@@ -1,20 +1,23 @@
- 
 "use client";
 import { AllJobSheetAction, deleteJobSheet, VerifyJobSheet } from "@/actions/admin/jobsheet";
 import { JOBsheetProps, PropsAuth } from "@/constants";
 import { useQuery, useQueryClient ,keepPreviousData } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import Loader from "./loader";
+import Loader from "./elements/loader";
 import moment from "moment";
 import DatePicker from "react-datepicker";
+import Refresh from "./elements/refresh";
+import { MdOutlineRefresh } from "react-icons/md";
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+const MySwal = withReactContent(Swal);
 
 const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) => {
   const client = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);  //  adjust the page size
+  const [pageSize, setPageSize] = useState(10);  // adjust the page size
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
@@ -22,22 +25,22 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
     queryKey: ["fetchjob", currentPage, pageSize, ],
     queryFn: async () => await AllJobSheetAction(currentPage, pageSize),
     placeholderData: keepPreviousData
-
   });
 
   const [filteredData, setFilteredData] = useState<JOBsheetProps[]>([]);
   const [sortOrder, setSortOrder] = useState<"new" | "old">("new");
-
+ 
   useEffect(() => {
     if (data) {
+      // Sort data by date (newest or oldest) as soon as it is fetched
       let sortedData = [...data.data];
+      sortedData.sort((a, b) => {
+        return sortOrder === "new"
+          ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
 
-      if (sortOrder === "new") {
-        sortedData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      } else {
-        sortedData.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-      }
-
+      // Apply date range filter if both startDate and endDate are provided
       if (startDate && endDate) {
         sortedData = sortedData.filter(
           (item) =>
@@ -71,7 +74,7 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
   };
 
   if (isLoading) return <Loader />;
-  if (isError) return <p>Error fetching data</p>;
+  if (isError) return <Refresh data="Error while Fetching Data" />;
 
   // Handle page change
   const handlePageChange = (page: number) => {
@@ -89,54 +92,81 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
   };
   const totalPages = Math.ceil((data?.total || 0) / pageSize);
 
+
+  const refreshfun = async() => {
+    await client.invalidateQueries({ queryKey: ['fetchjob'] });
+    toast.success('Data Refreshed');
+  }
+
+  const showAlert = ( id: string) => {
+      MySwal.fire({
+        title: 'Delete?',
+        text: `Do you want to delete jobsheet ?`,
+        cancelButtonText: 'Cancel',
+        confirmButtonText: 'Delete',
+        confirmButtonColor: '#f00',
+        showCloseButton: true,
+        showCancelButton: true,
+        reverseButtons: true,
+        focusCancel: true,
+        focusConfirm: false,                    
+      }).then(result => {
+        if (result.isConfirmed) {
+          deleteJObsheet(id);
+        }
+      })
+  }
+
   return (
     <div className="w-full min-h-screen px-10">
       <h1 className="text-center text-2xl font-bold mb-10">All Job Sheets</h1>
 
-      <div className="flex w-[70%] items-center justify-between mb-5">
-        <button
-          onClick={() => setSortOrder(sortOrder === "new" ? "old" : "new")}
-          className="px-4 py-3 buttonbg text-white rounded-lg"
-        >
+      <div className="flex w-full items-center justify-between mb-5">
+
+        <button onClick={() => setSortOrder(sortOrder === "new" ? "old" : "new")} className="px-4 py-3 buttonbg text-white rounded-lg">
           Sort: {sortOrder === "new" ? "Newest First" : "Oldest First"}
+        </button> 
+
+        <button onClick={() => refreshfun()} className=" buttonbg px-9 py-2  flex items-center justify-center gap-2 text-lg">
+        refresh  <MdOutlineRefresh size={22} />
         </button>
 
-<div>
-
-<label htmlFor="">Select limit</label>
-        <select className=" px-5 ml-2" defaultValue={pageSize} onChange={(e)=>setPageSize(Number(e?.target?.value))} >
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-        </select>
-</div>
-
-        <div className=" "> 
+        <div> 
           <p className=" text-center mb-3 font-medium text-lg">Select date range</p>
-         <div className=" flex gap-4">
-         <DatePicker
-              selected={startDate ? new Date(startDate) : null}
-              onChange={(date) => setStartDate(date ? date.toISOString().split('T')[0] : "")}
-              className="border inputbg bg-transparent px-2 py-1 rounded-lg"
-              dateFormat="yyyy-MM-dd"
-              placeholderText="Start Date"
-            />
-           <DatePicker
-              selected={endDate ? new Date(endDate) : null}
-              onChange={(date) => setEndDate(date ? date.toISOString().split('T')[0] : "")}
-              className="border inputbg bg-transparent px-2 py-1 rounded-lg"
-              dateFormat="yyyy-MM-dd"
-              placeholderText="End Date"
-            />
+          <div className=" flex gap-4">
+              <DatePicker
+                selected={startDate ? new Date(startDate) : null}
+                onChange={(date) => setStartDate(date ? date.toISOString().split('T')[0] : "")}
+                className="border inputbg bg-transparent px-2 py-1 rounded-lg"
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Start Date"
+                  />
+                <DatePicker
+                  selected={endDate ? new Date(endDate) : null}
+                  onChange={(date) => setEndDate(date ? date.toISOString().split('T')[0] : "")}
+                  className="border inputbg bg-transparent px-2 py-1 rounded-lg"
+                  dateFormat="yyyy-MM-dd"
+                  placeholderText="End Date"
+                  />
          </div>
         </div>
+
+        <div>
+          <label htmlFor="">Select limit</label>
+            <select className=" px-5 ml-2" defaultValue={pageSize} onChange={(e)=>setPageSize(Number(e?.target?.value))} >
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="30">30</option>
+              <option value="40">40</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+        
       </div>
 
       {/* Table */}
-      <div className="border-2 w-[3200px] inputbg border-[#80808056] p-3 rounded-lg">
-        <div className={` ${role === 'admin' ? " grid-cols-[repeat(15,_minmax(200px,_1fr))]  " : "grid-cols-[repeat(13,_minmax(220px,_1fr))]  " } grid grid-cols-[repeat(15,_minmax(0,_1fr))] gap-5 mb-5 border-b-2 border-[#80808056] pb-3 `}>
+      <div className={` ${role === 'admin' ? ' w-[3200px] ' : " w-[2700px] "} border-2  inputbg border-[#80808056] p-3 rounded-lg `}>
+        <div className={` ${role === 'admin' ? " grid-cols-[repeat(15,_minmax(200px,_1fr))]  " : " grid-cols-[repeat(13,_minmax(220px,_1fr))]  " } grid gap-5 mb-5 border-b-2 border-[#80808056] pb-3 `}>
           <p>ID</p>
           {role === "admin" && <p>Made By</p>}
           <p>Circle</p>
@@ -150,17 +180,17 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
           <p>Amount</p>
           <p>Verified</p>
           <p>Complain</p>
-
-          { role === 'admin' && <p>Delete</p>}
-
-        { role === 'admin' && <p>PDF</p>}
+{ role === 'admin' && <p>Delete</p>}
+{ role === 'admin' && <p>PDF</p>}
         </div>
 
+
+        {/* Employee Role Data */}    
         {role === "emp" &&
           filteredData
             .filter((job) => job.madeBy === emp?.email && job.circle === emp.city)
             .map((item) => (
-              <div key={item.id} className="grid grid-cols-[repeat(13,_minmax(200px,_1fr))] mb-5 hover:bg-[#466bfe64] rounded-xl transition-all py-4 gap-5 pb-3">
+              <div key={item.id} className="grid grid-cols-[repeat(13,_minmax(220px,_1fr))] mb-5 hover:bg-[#466bfe64] rounded-xl transition-all py-4 items-center gap-5 pb-3">
                 <p>{item.id}</p>
                 <p>{item.circle}</p>
                 <p>{item.division}</p>
@@ -169,21 +199,22 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
                 <p>{item.modelno}</p>
                 <p>{moment(item.createdAt).format("Do MMM YY")}</p>
                 <p>{moment(item.visitDate).format("Do MMM YY")}</p>
-                <p className={item.callClosed === "true" ? "text-red-500" : "text-green-500"}>
-                  {item.callClosed === "true" ? "Closed" : "Not Closed"}
-                </p>
+                <p className={item.callClosed === "true" ? "text-red-500" : "text-green-500"}>{item.callClosed === "true" ? "Closed" : "Not Closed"}</p>
                 <p>{item.totalAmount}</p>
-                <p className={item.verifiedBy === "false" ? "text-red-500" : "text-green-500"}>
-                  {item.verifiedBy === "false" ? "Not Verified" : "Verified"}
-                </p>
-                <Link href={`/emp/complain?search=${item.id}`} className="font-semibold !text-green-500 ">{item.complains.filter((c:any)=>c.status === 'New').map((c:any)=>c.status)} {item.complains.filter((c:any)=>c.status === 'New').length}</Link>
+                <p className={item.verifiedBy === "false" ? "text-red-500" : "text-green-500"}>{item.verifiedBy === "false" ? "Not Verified" : "Verified"}</p>
+
+                {/* complain */}
+                <Link href={`/emp/complain?search=${item.id}`} className="font-semibold !text-green-500 ">
+               { item.complains.filter((c:any)=>c.status === 'New').length !== 0 ? <span className="  font-semibold !text-green-500 underline "> New  {item.complains.filter((c:any)=>c.status === 'New').length}</span> : 'No complain' }
+               { item.complains.filter((c:any)=>c.status === 'Closed').length !== 0 && <span className=" text-red-500">Closed {item.complains.filter((c:any)=>c.status === 'Closed').length}</span>}
+                </Link>
               </div>
             ))}
 
         {/* Admin Role Data */}
         {role === "admin" &&
           filteredData.map((item) => (
-            <div key={item.id} className="grid grid-cols-[repeat(15,_minmax(200px,_1fr))] mb-5 hover:bg-[#466bfe91] rounded-3xl transition-all py-4  gap-5 ">
+            <div key={item.id} className="grid grid-cols-[repeat(15,_minmax(200px,_1fr))] mb-5 hover:bg-[#466bfe91] rounded-3xl transition-all py-4  items-center gap-5 ">
               <p>{item.id}</p>
               <p>{item.madeBy}</p>
               <p>{item.circle}</p>
@@ -204,10 +235,7 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
               ) : (
                 <p className="cursor-not-allowed buttonred text-center w-28 py-2">Closed</p>
               )}
-
               <p>{item?.totalAmount}</p>
-
-              {/* Verification Button */}
               {item?.verifiedBy === "false" ? (
                 <button onClick={() => verifyFunction(item.id, "true", item.callClosed)} className="buttonred text-center w-28 py-2"
                 >Not Verified</button>
@@ -215,7 +243,8 @@ const AllJobSheet = ({ role, emp }: { role: "admin" | "emp"; emp?: PropsAuth }) 
                 <p className="cursor-not-allowed buttongreen text-center w-28 py-2">Verified</p>
               )}
 
-              <Link href={`/admin/complain?search=${item.id}`} > <span className="  font-semibold !text-green-500 underline "> New  {item.complains.filter((c:any)=>c.status === 'New').length}</span> 
+              <Link href={`/admin/complain?search=${item.id}`} >
+              { item.complains.filter((c:any)=>c.status === 'New').length !== 0 ? <span className="  font-semibold !text-green-500 underline "> New  {item.complains.filter((c:any)=>c.status === 'New').length}</span> : 'No complain' } {' '}
               
                { item.complains.filter((c:any)=>c.status === 'Closed').length !== 0 && <span className=" text-red-500">Closed {item.complains.filter((c:any)=>c.status === 'Closed').length}</span>}
                 </Link>

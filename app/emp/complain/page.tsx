@@ -1,5 +1,5 @@
 
-import { currentUser } from '@/actions/admin/role'
+import { currentUser } from "@/actions/admin/adminform";
 import UserComplain from '@/components/UserComplain'
 import React from 'react'
 

@@ -1,4 +1,5 @@
-import { currentUser } from "@/actions/admin/role";
+
+import { currentUser } from "@/actions/admin/adminform";
 import AdminSidebar from "@/components/Sidebar";
 import Navbar from "@/components/navbar"; 
 import { redirect } from "next/navigation";

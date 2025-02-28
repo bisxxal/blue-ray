@@ -7,19 +7,11 @@ import toast from 'react-hot-toast';
       
 
 const CreateEmp = () => {
-    const { register, handleSubmit , 
-            formState:{errors , isSubmitting},
-            reset, 
-            } = useForm<TcreateEmp>({resolver:zodResolver(createEmp)})
-
-
+    const { register, handleSubmit , formState:{errors , isSubmitting},reset, } = useForm<TcreateEmp>({resolver:zodResolver(createEmp)})
         const onSubmit = async(data:TcreateEmp) => {
-
-         await AddEmp(data) 
+           await AddEmp(data) 
             toast.success('Added employee');
-
             reset()
-
         }
   return (
     <div className='w-full h-screen flex gap-6 pt-10 items-center flex-col '>

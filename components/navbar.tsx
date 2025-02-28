@@ -1,7 +1,7 @@
 "use client";
 import { PropsAuth } from "@/constants";
 import { signOut } from "next-auth/react";
-import SignInButton from "./SignInButton";
+import SignInButton from "./elements/SignInButton";
 import Link from "next/link";
 import { FaSignOutAlt } from "react-icons/fa";
 import { useEffect } from "react";
@@ -20,10 +20,10 @@ const Navbar = ({ session }: { session?: PropsAuth }) => {
   return (
     <nav className="z-[100] w-full h-[60px] fixed top-0 left-0 bg-[#ffffff16] backdrop-blur-[5px] text-white flex justify-between items-center px-4">
      { !session && <Link href="/">
-        <h1 className=" textbase font-bold text-3xl ">Blue Ray </h1>
+        <h1 className=" textbase font-bold text-3xl font-mono ">Blue Ray </h1>
       </Link>}
      { session && <Link href={"/"+role}>
-        <h1 className=" textbase font-bold text-3xl ">Blue Ray </h1>
+        <h1 className=" textbase font-bold text-3xl font-mono ">Blue Ray </h1>
       </Link>}
 
       <div className="flex items-center gap-9">

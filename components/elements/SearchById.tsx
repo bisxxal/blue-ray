@@ -26,7 +26,6 @@ const SearchInput: React.FC<SearchInputProps> = ({ placeholder = 'Search...', on
       type="text"
       placeholder={placeholder}
       value={searchTerm || urldata}
-      // defaultValue={ urldata || ''}
       onChange={(e) => setSearchTerm(e.target.value)}
       className="py-1 outline-none w-full bg-transparent "
       />

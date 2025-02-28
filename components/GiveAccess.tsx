@@ -5,6 +5,8 @@ import { PropsAuth } from '@/constants';
 import { QueryClient, useQuery } from '@tanstack/react-query'
 import toast from 'react-hot-toast' 
 import { FiLoader } from "react-icons/fi";
+import Loader from './elements/loader';
+import Refresh from './elements/refresh';
  
 
 async function getCookieData(city:string, id:number) {
@@ -21,7 +23,7 @@ async function getCookieData(city:string, id:number) {
 const GiveAccess = () => {
   
   const queryClient = new QueryClient()
-  const { isPending, data } = useQuery({
+  const { isPending, data ,isError , isLoading  } = useQuery({
     queryKey: ['fetchEmp' ,queryClient ],
     queryFn: async() => await AllEmployee(), 
     })  
@@ -30,6 +32,9 @@ const GiveAccess = () => {
   const giveAccess = async(city:string, id:number) => {
     await getCookieData(city, id)
   }
+
+  if (isLoading) return <Loader />;
+  if (isError) return  <Refresh data='Error while fetching data' />;;
   return (
     <div className=' w-full h-screen flex gap-6 pt-10 items-center flex-col '>
     <h1 className=' font-bold text-3xl text-center'>Give access</h1>
@@ -63,6 +68,10 @@ const GiveAccess = () => {
             </div>
               ))
             }  
+
+            {
+              data?.length === 0 && <div className=' w-full h-14 flex items-center justify-center'>No data available</div>
+            }
           </div> 
      }
     </div>

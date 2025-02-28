@@ -1,6 +1,7 @@
 'use client'; 
 import { emailResend } from '@/actions/email/email';
 import { CreateComplain } from '@/actions/user/complain';
+import { sendEmailNode } from '@/lib/email';
 import { TuserComplainForm, userComplainForm } from '@/lib/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form'
@@ -15,6 +16,7 @@ const UserComplaint = () => {
         if(res.status === 200){
           toast.success('complain registered');
           // await emailResend({ email: data?.email, subject: 'complain Sumbited'}); // email sending
+          await sendEmailNode({email:data?.email,message:'complain Sumbited' , subject:'Complaint resgistation'}); // email sending
           reset();
           }
           if(res.status === 201){
@@ -33,8 +35,8 @@ const UserComplaint = () => {
     <input className=' bg-transparent inputbg block rounded-lg outline-none border p-2' type="email"  {...register("email")}  placeholder='email '/>
     {errors?.email && <span className=' text-red-500 text-sm'>{errors?.email?.message}</span>}
     
-    <input className=' bg-transparent inputbg block rounded-lg outline-none border p-2' type="text"  {...register("complainId")}  placeholder='complainId '/> 
-    {errors?.complainId && <span className=' text-red-500 text-sm'>{errors?.complainId?.message}</span>}
+    <input className=' bg-transparent inputbg block rounded-lg outline-none border p-2' type="text"  {...register("jobSheetId")}  placeholder='complainId '/> 
+    {errors?.jobSheetId && <span className=' text-red-500 text-sm'>{errors?.jobSheetId?.message}</span>}
 
     <select className=' w-full block outline-none capitalize inputbg mt-3' {...register("city")} >
             <option value="balasore">balasore</option>
@@ -46,7 +48,7 @@ const UserComplaint = () => {
        {errors.city && <span className='text-red-600 text-sm'>{errors?.city?.message}</span>}
 
     <textarea className=' bg-transparent inputbg block rounded-lg outline-none border p-2'  {...register("description")}  placeholder='description '/> 
-    {errors?.complainId && <span className=' text-red-500 text-sm'>{errors?.description?.message}</span>}
+    {errors?.description && <span className=' text-red-500 text-sm'>{errors?.description?.message}</span>}
     <button className='w-fit px-8 py-3 buttonbg' disabled={isSubmitting} type="submit">Sumbit</button>
     </form>
     </div>

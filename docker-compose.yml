@@ -1,0 +1,47 @@
+version: "1.1"
+
+services:
+  # PostgreSQL Database Service
+   
+
+  # Next.js Application Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nextjs-app
+    environment:
+      # DATABASE_URL:postgresql://Blue-ray_owner:npg_kANceW1Fvq6S@ep-yellow-base-a8z2u5h5-pooler.eastus2.azure.neon.tech/Blue-ray?sslmode=require
+     
+      # GOOGLE_CLIENT_ID :622359162191-of7e39q863j49lthm9nunhss66vnd7qh.apps.googleusercontent.com
+      # GOOGLE_CLIENT_SECRET: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
+      # AUTH_SECRET:/iWq7QZgS+zWGRm6bNlYrQEerJuy7yKnxS6WNNxf4UM=
+      # NEXT_PUBLIC_SERVER_URL:http://localhost:3000
+      # RESEND_API_KEY :re_AFbuC4SD_GdvESwT4QK53qDJ1aGk9DHTA
+      # NEXTAUTH_SECRET:/iWq7QZgS+zWGRm6bNlYrQEerJuy7yKnxS6WNNxf4UM=
+      # NEXTAUTH_URL:http://localhost:3000
+      # EMAIL_USER:bbgudul@gmail.com
+      # EMAIL_PASS:aagl coez saus ykiy
+
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      AUTH_SECRET: ${AUTH_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+
+
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["npm", "run", "dev"]
+
+# Volumes for persistent data storage
+# volumes:
+#   postgres_data:

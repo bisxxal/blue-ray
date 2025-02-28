@@ -1,5 +1,5 @@
 
-import { currentUser } from "@/actions/admin/role";
+import { currentUser } from "@/actions/admin/adminform";
 import AdminSidebar from "@/components/Sidebar";
 import Navbar from "@/components/navbar";
 import { redirect } from "next/navigation";
@@ -10,9 +10,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await currentUser();
-  if (!user || user?.role === "emp" || user?.role === "user") {
+  // if (!user || user?.role === "emp" || user?.role === "user") {
+  //   redirect("/");
+  // } 
+  if (!user ) {
     redirect("/");
-  } else {
+  } 
+  else {
     return (
       <div className=" w-full min-h-screen ">
         <Navbar session={user} />

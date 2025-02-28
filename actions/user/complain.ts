@@ -7,7 +7,7 @@ export const CreateComplain = async (data:TuserComplainForm) => {
     try {
         const verifyComp = await prisma.jobsheet.findUnique({
             where:{
-                id:data.complainId
+                id:data.jobSheetId
             }
         })
         if(!verifyComp){
@@ -18,10 +18,9 @@ export const CreateComplain = async (data:TuserComplainForm) => {
                 name:data.name,
                 email:data.email,
                 city:data.city,
-                complainId: data.complainId,
                 description:data.description,
                 status:'New',
-                jobSheetId:data.complainId,
+                jobSheetId:data.jobSheetId,
             }
         })
         if(complain){
@@ -69,7 +68,7 @@ export const AllComplainForm  = async () => {
                 id  : true,
                 email:  true, 
                 createdAt: true,
-                complainId : true,
+                jobSheetId : true,
                 city     : true,
                 name   : true,
                 description     : true,
@@ -86,22 +85,7 @@ export const AllComplainForm  = async () => {
     }
 }
 
-export const UpdatedComplainStatus = async (id:string , status:string) => {
-    try {
-        const updated = await prisma.complains.update({
-            where:{
-                id:id
-            },
-            data:{
-                status:status
-            }
-        })
-        return JSON.parse(JSON.stringify({status:200}))
-    } catch (error) {
-        console.log(error)
-        return JSON.parse(JSON.stringify({status:404}))
-    }
-}
+
 export const AllUsersForm  = async () => {
     try { 
         const job = await prisma.userform.findMany({
@@ -147,6 +131,22 @@ export const UpdateUserFormCall = async (id:string , call:string) => {
         }
     } catch (error) {
         // console.log(error)
+        return JSON.parse(JSON.stringify({status:404}))
+    }
+}
+export const UpdatedComplainStatus = async (id:string , status:string) => {
+    try {
+        const updated = await prisma.complains.update({
+            where:{
+                id:id
+            },
+            data:{
+                status:status
+            }
+        })
+        return JSON.parse(JSON.stringify({status:200}))
+    } catch (error) {
+        console.log(error)
         return JSON.parse(JSON.stringify({status:404}))
     }
 }

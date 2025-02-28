@@ -1,8 +1,8 @@
-
+'use client'
 import { AllEmployee } from "@/actions/admin/adminform";
 import React from "react";
 
-const AdminIndex = async() => {
+const AdminIndex = () => {
 
   // const data = await AllEmployee()
   

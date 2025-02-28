@@ -15,7 +15,7 @@ const AdminSidebar = ({role}:SidebarProps) => {
   return (
     <div className='z-[100] !w-[200px] fixed left-0 top-[60px] h-[90vh] px-2 flex flex-col pt-5'>
 
-      <div className=' border h-full border-[#ffffff3c] backdrop-blur-md rounded-3xl pt-5 sidebarbg px-3'>
+      <div className=' border h-full border-[#ffffff3c] backdrop-blur-[20px] rounded-3xl pt-5 sidebarbg px-3'>
       {
             role === 'admin' && (
               <>
@@ -25,6 +25,7 @@ const AdminSidebar = ({role}:SidebarProps) => {
               <Link className={` ${pathname === '/admin/access' ? ' sidebg ' : ' text-[#bcbcbcde] border-[#bcbcbcde]   '}hover:scale-110 transition-all  border mt-3 p-2 flex items-center gap-2 text-lg rounded-2xl `} href='/admin/access'><IoAccessibilitySharp />Access</Link>
               <Link className={` ${pathname === '/admin/complain' ? ' sidebg ' : ' text-[#bcbcbcde] border-[#bcbcbcde]  '}hover:scale-110 transition-all  border mt-3 p-2 flex items-center gap-2 text-lg rounded-2xl `} href='/admin/complain'><LuDraftingCompass />Complain</Link>
               <Link className={` ${pathname === '/admin/userform' ? ' sidebg ' : ' text-[#bcbcbcde] border-[#bcbcbcde]  '} hover:scale-110 transition-all border mt-3 p-2 flex items-center gap-2 text-lg rounded-2xl `} href='/admin/userform'><FaWpforms />User form</Link>
+              <Link className={` ${pathname === '/admin/empincome' ? ' sidebg ' : ' text-[#bcbcbcde] border-[#bcbcbcde]  '} hover:scale-110 transition-all border mt-3 p-2 flex items-center gap-2 text-lg rounded-2xl `} href='/admin/empincome'><BsCashCoin />Emp Income</Link>
             </>
             )
           }

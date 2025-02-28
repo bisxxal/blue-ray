@@ -55,7 +55,7 @@ export interface revenueTypesProps {
 export interface ComplainProps {
   id: string;
   email: string;
-  complainId: string;
+  jobSheetId: string;
   city: string;
   name: string;
   description: string;

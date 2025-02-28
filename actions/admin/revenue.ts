@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma"
 import { handelError } from "@/lib/utils/error"
 import { getServerSession } from "next-auth"
 
-
 export const reveneueAction = async () => {
     try {
         const data = await prisma.jobsheet.findMany({
@@ -17,9 +16,6 @@ export const reveneueAction = async () => {
                 createdAt: true ,
                 madeBy:true
             },
-            where:{
-                
-            }
         }) 
         return JSON.parse(JSON.stringify(data))
     } catch (error) {
@@ -37,7 +33,7 @@ export const reveneueActionForEmp = async (year: number , email:string) => {
           gte: new Date(`${year}-01-01T00:00:00.000Z`), 
           lte: new Date(`${year}-12-31T23:59:59.999Z`),   
         },
-        madeBy: email!,
+        madeBy: email,
       },
       select: {
         totalAmount: true,
