@@ -1,9 +1,6 @@
 'use server'
-
-import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { handelError } from "@/lib/utils/error"
-import { getServerSession } from "next-auth"
 
 export const reveneueAction = async () => {
     try {

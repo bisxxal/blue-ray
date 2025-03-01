@@ -1,11 +1,13 @@
 'use client'
 
-import { currentUser } from "@/actions/admin/adminform";
+import { currentUser } from '@/actions/admin/role'
 import AllJobSheet from '@/components/AllJobSheet'
 import Jobsheet from '@/components/CreateJobsheet' 
 import Loader from '@/components/elements/loader'
 import Refresh from '@/components/elements/refresh'
+import { authOptions } from '@/lib/auth'
 import { useQuery } from '@tanstack/react-query'
+import { getServerSession } from 'next-auth'
 import React, { useState } from 'react'
 
 const page = () => { 
@@ -14,7 +16,8 @@ const page = () => {
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ["fetchEmp"],
     queryFn: async () => {
-      const data = await currentUser();
+      const session = await getServerSession(authOptions);
+      const data = await currentUser(session?.user?.email!);
       return data;
     },
     staleTime: 3000,

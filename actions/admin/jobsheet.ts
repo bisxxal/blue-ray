@@ -10,6 +10,7 @@ export const jobSheetAction = async (data:TJobSheet) => {
     try {
         const session = await getServerSession(authOptions)
         const { email , address , circle , product , division , serial , modelno , earthing , stabilizer , IPVoltage , OPVoltage , grillTemperature , roomTemperature , ambientTemperature , technicianName , visitDate , faultFound , actionTaken , extraMaterial , copperPipe , drainPipe , wire , ODUStand , PinPlug , airFilter , technicianComments , newSparepartConsumed , PartReplacementDetails  } = data      
+       
         const job = await prisma.jobsheet.create({
             data:{ email, address, circle, product, division, serial, modelno , earthing, stabilizer, IPVoltage, OPVoltage, grillTemperature, roomTemperature, ambientTemperature, technicianName, visitDate, faultFound, actionTaken, extraMaterial,
                 copperPipe:data?.copperPipe! as number,
@@ -26,10 +27,14 @@ export const jobSheetAction = async (data:TJobSheet) => {
 
             }
         })
-        //  console.log("pushed",job)
-         return JSON.parse(JSON.stringify({status:200}))
+
+        if(job){
+            return JSON.parse(JSON.stringify({status:200}))
+        }
+        else{
+            return JSON.parse(JSON.stringify({status:404}))
+        }
     } catch (error) {
-        // console.log(error)
         handelError(error , 'jobSheetAction')
         return JSON.parse(JSON.stringify({status:404}))
     }
@@ -38,7 +43,6 @@ export const jobSheetAction = async (data:TJobSheet) => {
 export const AllJobSheetAction = async (page: number = 1, limit: number = 4) => {
     try {
         const [jobs, total] = await prisma.$transaction([
-            
             prisma.jobsheet.findMany({
                     orderBy: {
                         createdAt: 'asc',  
@@ -81,6 +85,9 @@ export const AllJobSheetAction = async (page: number = 1, limit: number = 4) => 
 
 
 export const SingleJobSheetAction = async (id:string) => {
+    if(!id){
+        return JSON.parse(JSON.stringify({status:404}))
+       }
     try { 
         const job = await prisma.jobsheet.findMany({
             where:{
@@ -108,7 +115,10 @@ export const SingleJobSheetAction = async (id:string) => {
 
 export const VerifyJobSheet = async (id:string ,callClosed:string , verified:string) => {
     try {
-          await prisma.jobsheet.update({
+        if(!id){
+            return JSON.parse(JSON.stringify({status:404}))
+           }
+          const res = await prisma.jobsheet.update({
             where:{
                 id
             },
@@ -117,7 +127,12 @@ export const VerifyJobSheet = async (id:string ,callClosed:string , verified:str
                 callClosed
             }
         })
-        return JSON.parse(JSON.stringify({status:200}))
+        if(res){
+            return JSON.parse(JSON.stringify({status:200}))
+        }
+        else{
+            return JSON.parse(JSON.stringify({status:404}))
+        }
     } catch (error) {
         handelError(error , 'VerifyJobSheet')
         return JSON.parse(JSON.stringify({status:404}))
@@ -126,12 +141,21 @@ export const VerifyJobSheet = async (id:string ,callClosed:string , verified:str
 
 export const deleteJobSheet = async (id:string) => {
     try {
-        // await prisma.jobsheet.delete({
-        //     where:{
-        //         id
-        //     }
-        // })
-        // return JSON.parse(JSON.stringify({status:200}))
+        if(!id){
+            return JSON.parse(JSON.stringify({status:404}))
+        }
+        const res = await prisma.jobsheet.delete({
+            where:{
+                id
+            }
+        })
+        if(res){
+            return JSON.parse(JSON.stringify({status:200}))
+        }
+        else{
+            return JSON.parse(JSON.stringify({status:404}))
+        }
+        
     } catch (error) {
         handelError(error , 'deleteJobSheet')
         return JSON.parse(JSON.stringify({status:404}))
@@ -140,9 +164,11 @@ export const deleteJobSheet = async (id:string) => {
 
 export const UpdateJOBSheetAction = async (data:TJobSheet , id:string) => {
     try {
-        // console.log('first',data)
-        const session = await getServerSession(authOptions)
         const { email , address , circle , product , division , serial , modelno , earthing , stabilizer , IPVoltage , OPVoltage , grillTemperature , roomTemperature , ambientTemperature , technicianName , visitDate , faultFound , actionTaken , extraMaterial , copperPipe , drainPipe , wire , ODUStand , PinPlug , airFilter , technicianComments , newSparepartConsumed , PartReplacementDetails  } = data      
+       
+       if(!id){
+        return JSON.parse(JSON.stringify({status:404}))
+       }
         const job = await prisma.jobsheet.update({
             where:{
                 id:id
@@ -183,6 +209,7 @@ export const UpdateJOBSheetAction = async (data:TJobSheet , id:string) => {
         if (job){
             return JSON.parse(JSON.stringify({job,status:200}))
         }
+            return JSON.parse(JSON.stringify({status:404}))
     } catch (error) {
 
         handelError(error , 'UpdateJOBSheetAction')
@@ -192,7 +219,9 @@ export const UpdateJOBSheetAction = async (data:TJobSheet , id:string) => {
 
 export const FeatchJOBSheetData = async ( id:string) => {
     try {
-        console.log('fetching in server' , id)
+        if(!id){
+            return JSON.parse(JSON.stringify({status:404}))
+           }
         const job = await prisma.jobsheet.findUnique({
             where:{
                 id:id

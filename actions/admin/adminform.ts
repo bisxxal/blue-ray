@@ -2,9 +2,10 @@
 import { prisma } from "@/lib/prisma"
 import { handelError } from "@/lib/utils/error"
 import { TcreateEmp } from "@/lib/zod"
- import { getServerSession } from "next-auth";
- import { authOptions } from "@/lib/auth";
 export const AccessGive = async (city:string , id:string) => {
+    if(!id){
+        return JSON.parse(JSON.stringify({status:404}))
+       }
     try { 
         const emp = await prisma.user.update({
             where:{
@@ -13,7 +14,10 @@ export const AccessGive = async (city:string , id:string) => {
             data:{
                 city,
             },
-        }) 
+        })
+        if(!emp){
+            return JSON.parse(JSON.stringify({status:404}))
+           }
         return JSON.parse(JSON.stringify({status:200}))
     } catch (error) {
         handelError(error , 'AccessGive')
@@ -45,12 +49,10 @@ export const AllEmployee = async () => {
         handelError(error , 'AllEmployee')
         return JSON.parse(JSON.stringify({status:404}))
     }
-
 }
 
 export const AddEmp = async (data:TcreateEmp) => {
     try {
-        // console.log(data)
         const addEmp = await prisma.user.create({
             data:{
                 email:data.email,
@@ -58,45 +60,13 @@ export const AddEmp = async (data:TcreateEmp) => {
                 role:'emp',
                 city:data.city
             }
-
         })
+        if(!addEmp){
+            return JSON.parse(JSON.stringify({status:404}))
+        }
         return JSON.parse(JSON.stringify({status:200}))
     } catch (error) {
         handelError(error , 'createEmp')    
         return JSON.parse(JSON.stringify({status:404}))
-    }
-}
-
- 
-
-// 'use server'
-// import { authOptions } from "@/lib/auth";
-// import { prisma } from "@/lib/prisma";
-// import { getServerSession } from "next-auth";
-
-export const currentUser = async () => {
-    try {
-        const session = await getServerSession(authOptions);
-        if(session){
-            const user = await prisma.user.findUnique({
-                where:{
-                    email:session?.user?.email as string
-                },
-                select:{
-                    email:true,
-                    name:true,
-                    role:true,
-                    id:true,
-                    image:true,
-                    city:true,
-                }
-            })
-            return JSON.parse(JSON.stringify(user));
-        }
-        
-        // return JSON.parse(JSON.stringify(user));
-    } catch (error) {
-        console.log('first' , error)
-        // handelError(error , "CurrentUser in role.ts");
     }
 }
